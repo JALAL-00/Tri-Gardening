@@ -1,3 +1,5 @@
+// src/auth/auth.module.ts
+
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -8,7 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { EmailService } from 'src/common/email.service';
-//import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from './jwt.strategy'; // ✅ Added import
 
 @Module({
   imports: [
@@ -26,7 +28,15 @@ import { EmailService } from 'src/common/email.service';
       }),
     }),
   ],
-  providers: [AuthService, EmailService],
+  providers: [
+    AuthService,
+    EmailService,
+    JwtStrategy, // ✅ Added JwtStrategy
+  ],
   controllers: [AuthController],
+  exports: [
+    PassportModule,
+    JwtStrategy, // ✅ Exported JwtStrategy
+  ],
 })
 export class AuthModule {}

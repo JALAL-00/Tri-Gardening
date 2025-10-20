@@ -7,12 +7,14 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
+import { CategoriesModule } from './categories/categories.module';
+import { ProductsModule } from './products/products.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
-      
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
@@ -23,12 +25,16 @@ import { CommonModule } from './common/common.module';
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: true, // ⚠️ For dev only, turn off in production
       }),
     }),
+
     CommonModule,
-    AuthModule, 
-    UsersModule, 
+    AuthModule,
+    UsersModule,
+    CategoriesModule, // ✅ now imported properly
+    ProductsModule,   // ✅ now imported properly
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
