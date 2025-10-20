@@ -10,6 +10,8 @@ import { CommonModule } from './common/common.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { UploadsModule } from './uploads/uploads.module';
+import { TagsModule } from './tags/tags.module';
+import { BlogsModule } from './blogs/blogs.module';
 
 @Module({
   imports: [
@@ -32,9 +34,11 @@ import { UploadsModule } from './uploads/uploads.module';
     CommonModule,
     AuthModule,
     UsersModule,
-    CategoriesModule, // ✅ now imported properly
-    ProductsModule,   // ✅ now imported properly
-    UploadsModule,
+    CategoriesModule, 
+    ProductsModule,   
+    UploadsModule, 
+    TagsModule, 
+    BlogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
