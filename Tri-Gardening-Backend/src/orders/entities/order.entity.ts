@@ -32,7 +32,7 @@ export class Order {
     fullAddress: string;
   };
   
-  @OneToMany(() => OrderItem, (item) => item.order, { cascade: true, eager: true })
+  @OneToMany(() => OrderItem, (item: OrderItem) => item.order, { cascade: true, eager: true })
   items: OrderItem[];
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
