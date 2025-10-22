@@ -5,6 +5,7 @@ import { ProductVariant } from './entities/product-variant.entity';
 import { Category } from './entities/category.entity';
 import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
+import { PublicProductsController } from './public-products.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { CategoriesModule } from 'src/categories/categories.module';
 
@@ -15,6 +16,6 @@ import { CategoriesModule } from 'src/categories/categories.module';
     CategoriesModule,
   ],
   providers: [ProductsService],
-  controllers: [ProductsController],
+  controllers: [ProductsController, PublicProductsController],
 })
 export class ProductsModule {}

@@ -24,4 +24,5 @@ export class Tag {
   // Many-to-many with blogs
   @ManyToMany(() => Blog, (blog) => blog.tags)
   blogs: Blog[];
+  
 }

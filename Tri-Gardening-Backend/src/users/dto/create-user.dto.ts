@@ -7,7 +7,7 @@ import {
   IsArray,
 } from 'class-validator';
 
-// This is the shape of the Address entity, not the incoming request
+
 class AddressEntityDto {
   thana: string;
   district: string;
@@ -29,7 +29,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  password: string; // This will be the hashed password
+  password: string; 
 
   @IsArray()
   @IsOptional()

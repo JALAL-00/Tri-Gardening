@@ -13,6 +13,8 @@ import { UploadsModule } from './uploads/uploads.module';
 import { TagsModule } from './tags/tags.module';
 import { BlogsModule } from './blogs/blogs.module';
 import { OrdersModule } from './orders/orders.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { PageContentModule } from './page-content/page-content.module';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { OrdersModule } from './orders/orders.module';
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
         autoLoadEntities: true,
-        synchronize: true, // ⚠️ For dev only, turn off in production
+        synchronize: true, 
       }),
     }),
 
@@ -40,7 +42,9 @@ import { OrdersModule } from './orders/orders.module';
     UploadsModule, 
     TagsModule, 
     BlogsModule, 
-    OrdersModule,
+    OrdersModule, 
+    ReviewsModule, 
+    PageContentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

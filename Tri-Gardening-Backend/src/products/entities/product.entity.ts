@@ -6,10 +6,13 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Category } from './category.entity';
 import { ProductVariant } from './product-variant.entity';
 import { Tag } from './tag.entity';
+import { Review } from './review.entity';
 
 export enum ProductStatus {
   DRAFT = 'draft',
@@ -43,12 +46,23 @@ export class Product {
   })
   variants: ProductVariant[];
 
-  // --- TAGS RELATION ---
   @ManyToMany(() => Tag, (tag) => tag.products, { cascade: true })
   @JoinTable({
-    name: 'product_tags', // Custom join table name
+    name: 'product_tags',
     joinColumn: { name: 'product_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
   })
   tags: Tag[];
+
+  @OneToMany(() => Review, (review) => review.product)
+  reviews: Review[];
+
+  @Column({ type: 'boolean', default: false })
+  isFeatured: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

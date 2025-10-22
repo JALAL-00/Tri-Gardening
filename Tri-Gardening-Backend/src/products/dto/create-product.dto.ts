@@ -1,5 +1,4 @@
 // src/products/dto/create-product.dto.ts
-
 import {
   IsString,
   IsNotEmpty,
@@ -10,11 +9,11 @@ import {
   IsNumber,
   IsOptional,
   ArrayMinSize,
+  IsBoolean,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ProductStatus } from '../entities/product.entity';
 
-// ✅ DTO for a single product variant
 class CreateProductVariantDto {
   @IsString()
   @IsNotEmpty()
@@ -28,11 +27,10 @@ class CreateProductVariantDto {
 
   @IsArray()
   @IsString({ each: true })
-  @IsOptional() // <-- Makes this field optional
+  @IsOptional()
   images?: string[];
 }
 
-// ✅ Main DTO for creating a product
 export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
@@ -54,4 +52,8 @@ export class CreateProductDto {
   @ArrayMinSize(1)
   @Type(() => CreateProductVariantDto)
   variants: CreateProductVariantDto[];
+
+  @IsBoolean()
+  @IsOptional()
+  isFeatured?: boolean;
 }

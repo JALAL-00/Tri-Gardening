@@ -8,14 +8,14 @@ import {
   IsString,
   IsUUID,
   ValidateNested,
+  IsBoolean,
 } from 'class-validator';
 import { ProductStatus } from '../entities/product.entity';
 
-// --- DTO for a single variant during update ---
 export class UpdateProductVariantDto {
   @IsUUID()
   @IsOptional()
-  id?: string; // Present if updating an existing variant
+  id?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -33,11 +33,10 @@ export class UpdateProductVariantDto {
   images?: string[];
 }
 
-// --- Main DTO for updating the product ---
 export class UpdateProductDto {
   @IsUUID()
   @IsNotEmpty()
-  id: string; // Required product ID for updates
+  id: string;
 
   @IsString()
   @IsOptional()
@@ -60,4 +59,8 @@ export class UpdateProductDto {
   @Type(() => UpdateProductVariantDto)
   @IsOptional()
   variants?: UpdateProductVariantDto[];
+
+  @IsBoolean()
+  @IsOptional()
+  isFeatured?: boolean;
 }

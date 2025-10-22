@@ -31,14 +31,14 @@ export class User {
   @Column({ type: 'varchar' })
   password: string;
 
-  // --- PASSWORD RESET TOKEN METHOD (EMAIL LINK) ---
+
   @Column({ type: 'varchar', nullable: true })
   passwordResetToken: string | null;
 
   @Column({ type: 'timestamp', nullable: true })
   passwordResetExpires: Date | null;
 
-  // --- OTP-BASED RESET (PHONE OR EMAIL OTP) ---
+
   @Column({ type: 'varchar', nullable: true })
   passwordResetOtp: string | null;
 

@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from 'src/auth/auth.module';
 import { CategoriesModule } from 'src/categories/categories.module';
+import { TagsModule } from 'src/tags/tags.module';
 import { Blog } from 'src/products/entities/blog.entity';
 import { Tag } from 'src/products/entities/tag.entity';
-import { TagsModule } from 'src/tags/tags.module';
-import { BlogsController } from './blogs.controller';
 import { BlogsService } from './blogs.service';
+import { BlogsController } from './blogs.controller';
+import { PublicBlogsController } from './public-blogs.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { BlogsService } from './blogs.service';
     CategoriesModule,
     TagsModule
   ],
-  controllers: [BlogsController],
+  controllers: [BlogsController, PublicBlogsController],
   providers: [BlogsService]
 })
 export class BlogsModule {}
