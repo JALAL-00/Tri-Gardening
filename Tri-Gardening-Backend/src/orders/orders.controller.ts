@@ -22,36 +22,36 @@ import { OrdersService } from './orders.service';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  // -------------------------------
-  // 🛒 CUSTOMER: Create Order
-  // -------------------------------
   @Post('orders')
   @UseGuards(CustomerGuard)
   create(@Body() createOrderDto: CreateOrderDto, @GetUser() user: User) {
     return this.ordersService.create(createOrderDto, user);
   }
 
-  // -------------------------------
-  // 🧭 ADMIN: Find All Orders with optional filtering
-  // -------------------------------
+  @Get('orders')
+  @UseGuards(CustomerGuard)
+  findAllForUser(@GetUser() user: User) {
+    return this.ordersService.findAllForUser(user);
+  }
+
+  @Get('orders/:id')
+  @UseGuards(CustomerGuard)
+  findOneForUser(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: User) {
+    return this.ordersService.findOneForUser(id, user);
+  }
+
   @Get('admin/orders')
   @UseGuards(AdminGuard)
   findAllAdmin(@Query() queryDto: FindOrdersQueryDto) {
     return this.ordersService.findAllAdmin(queryDto);
   }
 
-  // -------------------------------
-  // 🧾 ADMIN: Find One Order by UUID
-  // -------------------------------
   @Get('admin/orders/:id')
   @UseGuards(AdminGuard)
   findOneAdmin(@Param('id', ParseUUIDPipe) id: string) {
     return this.ordersService.findOneAdmin(id);
   }
 
-  // -------------------------------
-  // 🚦 ADMIN: Update Order Status
-  // -------------------------------
   @Put('admin/orders/status')
   @UseGuards(AdminGuard)
   updateStatus(@Body() updateOrderStatusDto: UpdateOrderStatusDto) {

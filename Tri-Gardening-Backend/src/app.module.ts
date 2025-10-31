@@ -15,6 +15,8 @@ import { BlogsModule } from './blogs/blogs.module';
 import { OrdersModule } from './orders/orders.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { PageContentModule } from './page-content/page-content.module';
+import { ProfileModule } from './profile/profile.module';
+import { AddressesModule } from './addresses/addresses.module';
 
 @Module({
   imports: [
@@ -44,7 +46,9 @@ import { PageContentModule } from './page-content/page-content.module';
     BlogsModule, 
     OrdersModule, 
     ReviewsModule, 
-    PageContentModule,
+    PageContentModule, 
+    ProfileModule, 
+    AddressesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
