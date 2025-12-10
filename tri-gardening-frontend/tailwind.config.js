@@ -3,7 +3,6 @@ import animate from 'tailwindcss-animate' // <-- IMPORT the plugin here
 const config = {
   darkMode: ['class'],
   content: [
-    './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
