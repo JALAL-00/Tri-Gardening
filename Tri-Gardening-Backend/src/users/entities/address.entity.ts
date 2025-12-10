@@ -11,15 +11,18 @@ export class Address {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'varchar' }) 
   thana: string;
 
-  @Column()
+  @Column({ type: 'varchar' }) 
   district: string;
 
   @Column({ type: 'text' })
   fullAddress: string;
 
-  @ManyToOne(() => User, (user) => user.addresses)
+  @Column({ type: 'boolean', default: false })
+  isDefault: boolean;
+
+  @ManyToOne(() => User, (user) => user.addresses, { onDelete: 'CASCADE' })
   user: User;
 }

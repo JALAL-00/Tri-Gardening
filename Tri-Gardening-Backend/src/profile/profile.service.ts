@@ -34,8 +34,13 @@ export class ProfileService {
     }
   }
 
+  async updateProfilePicture(user: User, filePath: string): Promise<User> {
+    user.profilePictureUrl = filePath;
+    return this.userRepository.save(user);
+  }
+
   async changePassword(user: User, changePasswordDto: ChangePasswordDto): Promise<{ message: string }> {
-    const userWithPassword = await this.userRepository.findOne({ where: { id: user.id } });
+    const userWithPassword = await this.userRepository.findOne({ where: { id: user.id }, select: ['id', 'password'] });
     if (!userWithPassword) {
       throw new NotFoundException('User not found.');
     }

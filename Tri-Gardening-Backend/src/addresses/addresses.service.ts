@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { Address } from 'src/users/entities/address.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm'; 
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 
@@ -16,7 +16,7 @@ export class AddressesService {
   async create(createAddressDto: CreateAddressDto, user: User): Promise<Address> {
     const address = this.addressRepository.create({
       ...createAddressDto,
-      user, // Associate the address with the logged-in user
+      user,
     });
     return this.addressRepository.save(address);
   }
@@ -24,10 +24,10 @@ export class AddressesService {
   async findAllForUser(user: User): Promise<Address[]> {
     return this.addressRepository.find({
       where: { user: { id: user.id } },
+      order: { isDefault: 'DESC', id: 'ASC' } 
     });
   }
-
-  // Helper method with built-in ownership check
+  
   private async findOneForUser(id: string, user: User): Promise<Address> {
     const address = await this.addressRepository.findOne({ where: { id, user: { id: user.id } }});
     if (!address) {
@@ -36,14 +36,26 @@ export class AddressesService {
     return address;
   }
 
+  async setDefault(id: string, user: User): Promise<Address> {
+    const newDefaultAddress = await this.findOneForUser(id, user); 
+
+    await this.addressRepository.update(
+        { user: { id: user.id }, id: Not(id) }, 
+        { isDefault: false }
+    );
+    
+    newDefaultAddress.isDefault = true;
+    return this.addressRepository.save(newDefaultAddress);
+  }
+
   async update(id: string, updateAddressDto: UpdateAddressDto, user: User): Promise<Address> {
-    const address = await this.findOneForUser(id, user); // Ownership checked here
+    const address = await this.findOneForUser(id, user);
     Object.assign(address, updateAddressDto);
     return this.addressRepository.save(address);
   }
   
   async remove(id: string, user: User): Promise<void> {
-    const address = await this.findOneForUser(id, user); // Ownership checked here
+    const address = await this.findOneForUser(id, user);
     await this.addressRepository.remove(address);
   }
 }

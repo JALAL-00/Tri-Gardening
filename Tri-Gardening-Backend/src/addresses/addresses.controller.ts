@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, ParseUUIDPipe, Patch } from '@nestjs/common'; // <-- Add Patch
 import { AddressesService } from './addresses.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
@@ -19,6 +19,11 @@ export class AddressesController {
   @Get()
   findAll(@GetUser() user: User) {
     return this.addressesService.findAllForUser(user);
+  }
+
+  @Patch(':id/default')
+  setDefault(@Param('id', ParseUUIDPipe) id: string, @GetUser() user: User) {
+    return this.addressesService.setDefault(id, user);
   }
 
   @Put(':id')
