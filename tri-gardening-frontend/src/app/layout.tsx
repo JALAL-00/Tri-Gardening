@@ -1,0 +1,29 @@
+// src/app/layout.tsx
+
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import QueryProvider from "@/providers/QueryProvider";
+
+const inter = Inter({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: "TriGardening",
+  description: "Your trusted partner in gardening.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" className="dark">
+      <body className={inter.className}>
+        <QueryProvider>
+          {children}
+        </QueryProvider>
+      </body>
+    </html>
+  );
+}
