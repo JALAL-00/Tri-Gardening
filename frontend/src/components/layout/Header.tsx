@@ -6,11 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/store/authStore';
 import { useEffect, useState } from 'react';
-import { SunIcon } from '@radix-ui/react-icons'; 
+import { SunIcon } from '@radix-ui/react-icons';
+import CartSheet from '@/components/cart/CartSheet';
+import { useCartStore } from '@/store/cartStore';
 
 export default function Header() {
   const { isAuthenticated } = useAuthStore();
+  
+  // This is the correct, reactive way to get the total item count
+  const totalItems = useCartStore(state => 
+    state.items.reduce((total, item) => total + item.quantity, 0)
+  );
 
+  // isClient state is still needed to prevent hydration mismatch for auth and cart
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
@@ -62,9 +70,16 @@ export default function Header() {
           </Button>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="text-green-100 hover:bg-green-800/50 hover:text-white">
-              <ShoppingCart className="h-6 w-6" />
-            </Button>
+            <CartSheet>
+              <Button variant="ghost" size="icon" className="relative text-green-100 hover:bg-green-800/50 hover:text-white">
+                <ShoppingCart className="h-6 w-6" />
+                {isClient && totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                    {totalItems}
+                  </span>
+                )}
+              </Button>
+            </CartSheet>
 
             {isClient && (
               <Link href={isAuthenticated ? "/profile" : "/login"} passHref>
