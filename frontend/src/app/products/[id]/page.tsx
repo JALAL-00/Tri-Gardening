@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { notFound } from 'next/navigation';
@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Loader2, Minus, Plus, Star } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 
-// Define the type for the full product data we expect from the API
+
 type ProductVariant = {
   id: string;
   title: string;
@@ -36,7 +36,7 @@ type Product = {
 };
 
 
-// API function to fetch a single product
+
 const getProduct = async (id: string): Promise<Product> => {
   const { data } = await api.post('/products/find-one', { id });
   return data;
@@ -51,18 +51,22 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     queryFn: () => getProduct(productId),
   });
 
-  // State for the selected variant and quantity
+
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
 
-  // Effect to set the default selected variant when data loads
-  useState(() => {
-    if (product && product.variants.length > 0) {
+  useEffect(() => {
+    if (product && product.variants.length > 0 && !selectedVariantId) {
       setSelectedVariantId(product.variants[0].id);
     }
-  });
+  }, [product, selectedVariantId]);
 
   const selectedVariant = product?.variants.find(v => v.id === selectedVariantId);
+
+  const imagePath = selectedVariant?.images[0];
+  const imageUrl = imagePath
+    ? `http://localhost:5005${imagePath}`
+    : "/placeholder.svg";
 
   const handleAddToCart = () => {
     if (!product || !selectedVariant) return;
@@ -82,28 +86,28 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     return <div className="flex h-[80vh] items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-green-600" /></div>;
   }
   if (isError || !product) {
-    return notFound(); // This will render the nearest not-found.tsx page
+    return notFound();
   }
 
   return (
     <div className="bg-white text-gray-800">
       <div className="container mx-auto px-4 md:px-6 py-12">
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-          {/* Image Gallery */}
+
           <div>
-            <div className="aspect-square w-full rounded-lg overflow-hidden mb-4">
+            <div className="aspect-square w-full rounded-lg overflow-hidden mb-4 border">
               <Image
-                src={selectedVariant?.images[0] || '/placeholder.svg'}
+                src={imageUrl}
                 alt={product.name}
                 width={600}
                 height={600}
                 className="w-full h-full object-cover"
               />
             </div>
-            {/* Thumbnails would go here */}
+
           </div>
 
-          {/* Product Details */}
+
           <div className="space-y-4">
             <h1 className="text-3xl lg:text-4xl font-bold text-green-900">{product.name}</h1>
             <div className="flex items-center gap-2">
@@ -121,7 +125,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             
             <Separator />
             
-            {/* Variant Selection */}
+
             <div>
               <Label className="text-lg font-semibold">Size</Label>
               <RadioGroup
@@ -150,7 +154,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             
             <Separator />
             
-            {/* Quantity and Add to Cart */}
+
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 rounded-lg border border-gray-300 p-2">
                 <Button variant="ghost" size="icon" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
@@ -164,14 +168,14 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             
             <Separator />
             
-            {/* Description */}
+
             <div>
               <h3 className="text-lg font-semibold mb-2">Description</h3>
               <p className="text-gray-600">{product.description}</p>
             </div>
           </div>
         </div>
-        {/* Reviews Section would go here */}
+        
       </div>
     </div>
   );

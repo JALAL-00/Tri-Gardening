@@ -1,6 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Intentionally empty. We will add configuration here later if needed.
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '5005', 
+        pathname: '/uploads/**', 
+      },
+    ],
+  },
 };
 
 export default nextConfig;
