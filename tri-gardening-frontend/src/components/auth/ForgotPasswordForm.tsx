@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import api from "@/lib/api";
 
-// API call function
+
 const forgotPasswordRequest = async (email: string) => {
   const response = await api.post('/auth/forgot-password', { email });
   return response.data;
@@ -25,13 +25,12 @@ export default function ForgotPasswordForm() {
   const mutation = useMutation({
     mutationFn: forgotPasswordRequest,
     onSuccess: () => {
-      // On success, navigate the user to the reset page, passing the email along
+
       router.push(`/reset-password?email=${encodeURIComponent(email)}`);
     },
     onError: (error) => {
       console.error("Forgot password request failed:", error);
-      // We can show an error, but the backend always returns a success message for security
-      // So, we'll navigate anyway to not reveal if an email exists.
+      
       router.push(`/reset-password?email=${encodeURIComponent(email)}`);
     },
   });

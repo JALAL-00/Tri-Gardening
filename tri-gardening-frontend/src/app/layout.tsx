@@ -1,9 +1,9 @@
-// src/app/layout.tsx
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
+import Header from "@/components/layout/Header"; 
+import Footer from "@/components/layout/Footer"; 
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +18,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body className={inter.className}>
         <QueryProvider>
-          {children}
+          <div className="flex min-h-screen flex-col">
+            <Header />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+          </div>
         </QueryProvider>
       </body>
     </html>
