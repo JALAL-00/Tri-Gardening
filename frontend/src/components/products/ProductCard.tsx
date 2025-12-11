@@ -4,8 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 
-// Define the type for the product data this card expects
-// We can expand this later
+
 type Product = {
   id: string;
   name: string;
@@ -18,7 +17,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  // Find the minimum price among variants to display
+
   const minPrice = Math.min(...product.variants.map(v => v.price));
   const primaryImage = product.variants[0]?.images[0] || "/placeholder.svg";
 
