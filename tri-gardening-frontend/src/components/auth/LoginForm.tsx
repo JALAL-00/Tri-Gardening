@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Facebook, Chrome, Loader2 } from "lucide-react";
+import { Facebook, Chrome, Loader2, Eye, EyeOff } from "lucide-react";
 
 import api from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
@@ -25,6 +25,8 @@ const loginUser = async (data: LoginData) => {
 export default function LoginForm() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const router = useRouter();
   const setToken = useAuthStore((state) => state.setToken);
 
@@ -44,7 +46,6 @@ export default function LoginForm() {
     mutation.mutate({ phone, password });
   };
 
-  // --- STYLING CHANGES ARE HERE ---
   return (
     <Card className="w-full max-w-md bg-green-950/40 backdrop-blur-xl border border-green-500/30 text-primary-foreground shadow-2xl">
       <CardHeader className="text-center space-y-2">
@@ -55,8 +56,11 @@ export default function LoginForm() {
           To see update on your orders
         </CardDescription>
       </CardHeader>
+
       <CardContent className="px-8 pb-8">
         <form onSubmit={handleSubmit} className="space-y-6">
+
+          {/* PHONE NUMBER */}
           <div className="space-y-2 text-left">
             <Label htmlFor="phone" className="text-green-100">Phone Number</Label>
             <Input
@@ -65,22 +69,42 @@ export default function LoginForm() {
               placeholder="Enter your phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="bg-white/10 border-green-400/50 placeholder:text-green-300/70 focus:ring-green-400 focus:border-green-400"
+              className="bg-white/10 border-green-400/50 text-white placeholder:text-green-300/70 focus:ring-green-400 focus:border-green-400"
               required
             />
           </div>
-          <div className="space-y-2 text-left">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/10 border-green-400/50 placeholder:text-green-300/70 focus:ring-green-400 focus:border-green-400"
-              required
-            />
+
+          {/* PASSWORD WITH SHOW/HIDE ICON */}
+          <div className="space-y-2 text-left relative">
+            <Label htmlFor="password" className="text-green-100">Password</Label>
+
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-white/10 border-green-400/50 text-white placeholder:text-green-300/70 focus:ring-green-400 focus:border-green-400 pr-12"
+                required
+              />
+
+              {/* Eye Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-green-200 hover:text-white"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* REMEMBER + FORGOT */}
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-2">
               <Checkbox id="remember" className="border-green-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500" />
@@ -92,17 +116,22 @@ export default function LoginForm() {
               <span className="text-green-300 hover:text-white hover:underline">Forgot Password?</span>
             </Link>
           </div>
-          
+
           {mutation.isError && (
              <p className="text-sm text-red-400 text-center">Login failed. Please check your credentials.</p>
           )}
 
-          <Button type="submit" className="w-full bg-green-600 text-lg font-semibold text-white hover:bg-green-700 h-12 transition-all duration-300" disabled={mutation.isPending}>
+          <Button
+            type="submit"
+            className="w-full bg-green-600 text-lg font-semibold text-white hover:bg-green-700 h-12 transition-all duration-300"
+            disabled={mutation.isPending}
+          >
             {mutation.isPending && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
             {mutation.isPending ? "Logging in..." : "Login"}
           </Button>
         </form>
 
+        {/* SOCIAL LOGIN */}
         <div className="mt-6 flex items-center justify-center">
           <div className="grid grid-cols-2 gap-4 w-full">
             <Button variant="outline" className="bg-transparent border border-blue-500/50 text-white hover:bg-blue-500/20 hover:border-blue-500">
@@ -114,6 +143,7 @@ export default function LoginForm() {
           </div>
         </div>
 
+        {/* REGISTER LINK */}
         <div className="mt-8 text-center text-sm">
           <Link href="/register" passHref>
             <span className="font-semibold text-green-200 hover:text-white hover:underline transition-colors">

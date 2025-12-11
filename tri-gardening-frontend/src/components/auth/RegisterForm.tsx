@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Facebook, Chrome, Loader2 } from "lucide-react";
+import { Facebook, Chrome, Loader2, Eye, EyeOff } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea"; 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // And Select for dropdowns
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import api from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
@@ -41,6 +41,7 @@ export default function RegisterForm() {
   const [fullAddress, setFullAddress] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
   const setToken = useAuthStore((state) => state.setToken);
@@ -85,21 +86,45 @@ export default function RegisterForm() {
           To see update on your orders
         </CardDescription>
       </CardHeader>
+
       <CardContent className="px-8 pb-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* FULL NAME */}
             <div className="space-y-2 text-left">
               <Label htmlFor="fullName" className="text-green-100">Full Name</Label>
-              <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Enter your full name" required className="bg-white/10 border-green-400/50" />
+              <Input
+                id="fullName"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Enter your full name"
+                required
+                className="bg-white/10 border-green-400/50 text-white"
+              />
             </div>
+
+            {/* PHONE NUMBER */}
             <div className="space-y-2 text-left">
               <Label htmlFor="phone" className="text-green-100">Phone Number</Label>
-              <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" placeholder="Enter your phone number" required className="bg-white/10 border-green-400/50" />
+              <Input
+                id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                type="tel"
+                placeholder="Enter your phone number"
+                required
+                className="bg-white/10 border-green-400/50 text-white"
+              />
             </div>
+
+            {/* THANA */}
             <div className="space-y-2 text-left">
               <Label htmlFor="thana" className="text-green-100">Thana</Label>
               <Select onValueChange={setThana} required>
-                <SelectTrigger className="bg-white/10 border-green-400/50"><SelectValue placeholder="Select Thana" /></SelectTrigger>
+                <SelectTrigger className="bg-white/10 border-green-400/50 text-white">
+                  <SelectValue placeholder="Select Thana" />
+                </SelectTrigger>
                 <SelectContent className="bg-green-900 text-white border-green-700">
                   <SelectItem value="Mirpur">Mirpur</SelectItem>
                   <SelectItem value="Gulshan">Gulshan</SelectItem>
@@ -107,10 +132,14 @@ export default function RegisterForm() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* DISTRICT */}
             <div className="space-y-2 text-left">
               <Label htmlFor="district" className="text-green-100">District</Label>
               <Select onValueChange={setDistrict} required>
-                <SelectTrigger className="bg-white/10 border-green-400/50"><SelectValue placeholder="Select District" /></SelectTrigger>
+                <SelectTrigger className="bg-white/10 border-green-400/50 text-white">
+                  <SelectValue placeholder="Select District" />
+                </SelectTrigger>
                 <SelectContent className="bg-green-900 text-white border-green-700">
                   <SelectItem value="Dhaka">Dhaka</SelectItem>
                   <SelectItem value="Chittagong">Chittagong</SelectItem>
@@ -118,26 +147,70 @@ export default function RegisterForm() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* FULL ADDRESS */}
             <div className="md:col-span-2 space-y-2 text-left">
-              <Label htmlFor="fullAddress" className="text-green-100">Full Address <span className="text-green-300/70">(Optional)</span></Label>
-              <Textarea id="fullAddress" value={fullAddress} onChange={(e) => setFullAddress(e.target.value)} placeholder="House, Road, Area..." className="bg-white/10 border-green-400/50" />
+              <Label htmlFor="fullAddress" className="text-green-100">
+                Full Address <span className="text-green-300/70">(Optional)</span>
+              </Label>
+              <Textarea
+                id="fullAddress"
+                value={fullAddress}
+                onChange={(e) => setFullAddress(e.target.value)}
+                placeholder="House, Road, Area..."
+                className="bg-white/10 border-green-400/50 text-white"
+              />
             </div>
-            <div className="space-y-2 text-left">
-              <Label htmlFor="email" className="text-green-100">Email Address <span className="text-green-300/70">(Optional)</span></Label>
-              <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Enter your email" className="bg-white/10 border-green-400/50" />
+
+            {/* EMAIL */}
+            <div className="space-y-2 text-left col-span-2">
+              <Label htmlFor="email" className="text-green-100">
+                Email Address <span className="text-green-300/70">(Optional)</span>
+              </Label>
+              <Input
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                placeholder="Enter your email"
+                className="bg-white/10 border-green-400/50 text-white pr-12"
+              />
             </div>
-            <div className="space-y-2 text-left">
-            </div>
+
+            {/* PASSWORD + EYE ICON */}
             <div className="md:col-span-2 space-y-2 text-left">
               <Label htmlFor="password" className="text-green-100">Password</Label>
-              <Input id="password" value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Enter your password (min. 8 characters)" required className="bg-white/10 border-green-400/50" />
+
+              <div className="relative">
+                <Input
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password (min. 8 characters)"
+                  required
+                  className="bg-white/10 border-green-400/50 text-white pr-12"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-green-200 hover:text-white"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
           </div>
-          
+
+          {/* ERROR */}
           {mutation.isError && (
-             <p className="text-sm text-red-400 text-center">{mutation.error?.response?.data?.message || "Registration failed. Please try again."}</p>
+            <p className="text-sm text-red-400 text-center">
+              {mutation.error?.response?.data?.message || "Registration failed. Please try again."}
+            </p>
           )}
 
+          {/* SUBMIT */}
           <Button type="submit" className="w-full bg-green-600 text-lg font-semibold text-white hover:bg-green-700 h-12 transition-all duration-300" disabled={mutation.isPending}>
             {mutation.isPending && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
             {mutation.isPending ? "Registering..." : "Register"}
