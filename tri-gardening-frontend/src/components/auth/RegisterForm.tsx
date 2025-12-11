@@ -10,13 +10,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Facebook, Chrome, Loader2 } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea"; // We'll need Textarea for the full address
+import { Textarea } from "@/components/ui/textarea"; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"; // And Select for dropdowns
 
 import api from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
 
-// --- Define the shape of the data for the register mutation ---
 interface RegisterData {
   fullName: string;
   phone: string;
@@ -35,7 +34,6 @@ const registerUser = async (data: RegisterData) => {
 };
 
 export default function RegisterForm() {
-  // --- State for all form fields ---
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [thana, setThana] = useState("");
@@ -50,20 +48,17 @@ export default function RegisterForm() {
   const mutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
-      // On successful registration, save the token and redirect to the profile
       setToken(data.accessToken);
       router.push('/profile');
     },
     onError: (error: any) => {
       console.error("Registration failed:", error);
-      // You can add more specific error handling here based on the error response
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!thana || !district) {
-      // Simple validation for dropdowns
       alert("Please select a Thana and District.");
       return;
     }
@@ -132,7 +127,6 @@ export default function RegisterForm() {
               <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Enter your email" className="bg-white/10 border-green-400/50" />
             </div>
             <div className="space-y-2 text-left">
-                {/* Placeholder for Secondary Number from Figma if needed */}
             </div>
             <div className="md:col-span-2 space-y-2 text-left">
               <Label htmlFor="password" className="text-green-100">Password</Label>
