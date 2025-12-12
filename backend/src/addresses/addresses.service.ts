@@ -24,6 +24,7 @@ export class AddressesService {
   async findAllForUser(user: User): Promise<Address[]> {
     return this.addressRepository.find({
       where: { user: { id: user.id } },
+      relations: ['user'],
       order: { isDefault: 'DESC', id: 'ASC' } 
     });
   }
