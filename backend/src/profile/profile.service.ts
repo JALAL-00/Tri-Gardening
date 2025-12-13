@@ -15,7 +15,6 @@ export class ProfileService {
     private readonly jwtService: JwtService,
   ) {}
   
-  // Helper to get a fresh user object. This is the core of the fix.
   private async findUserById(id: string): Promise<User> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
@@ -25,12 +24,10 @@ export class ProfileService {
   }
 
   async getProfile(user: User): Promise<User> {
-    // getProfile can still use the passed user object initially, but re-fetching is safer.
     return this.findUserById(user.id);
   }
 
   async updateProfile(user: User, updateProfileDto: UpdateProfileDto): Promise<{ accessToken: string }> {
-    // ALWAYS re-fetch the user from the database before making changes.
     const userToUpdate = await this.findUserById(user.id);
     
     Object.assign(userToUpdate, updateProfileDto);
@@ -52,7 +49,6 @@ export class ProfileService {
   }
 
   async updateProfilePicture(user: User, filePath: string): Promise<User> {
-    // ALWAYS re-fetch the user from the database.
     const userToUpdate = await this.findUserById(user.id);
     
     userToUpdate.profilePictureUrl = filePath;
@@ -87,7 +83,6 @@ export class ProfileService {
   }
 
   async getReferralSummary(user: User): Promise<any> {
-    // This method is read-only, so it doesn't strictly need re-fetching, but it's good practice.
     const currentUser = await this.findUserById(user.id);
     return {
       referralCode: currentUser.referralCode,
