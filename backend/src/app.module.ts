@@ -17,6 +17,7 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { PageContentModule } from './page-content/page-content.module';
 import { ProfileModule } from './profile/profile.module';
 import { AddressesModule } from './addresses/addresses.module';
+import { MulterModule } from '@nestjs/platform-express'
 
 @Module({
   imports: [
@@ -34,6 +35,10 @@ import { AddressesModule } from './addresses/addresses.module';
         autoLoadEntities: true,
         synchronize: true, 
       }),
+    }),
+
+    MulterModule.register({
+      dest: './uploads',
     }),
 
     CommonModule,

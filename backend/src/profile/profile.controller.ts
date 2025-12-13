@@ -27,14 +27,15 @@ export class ProfileController {
     return this.profileService.updateProfile(user, updateProfileDto);
   }
 
-  @Post('picture')
+@Post('picture')
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
-      destination: './uploads/profiles', 
+      destination: './uploads/profiles',
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const extension = file.mimetype.split('/')[1];
-        cb(null, `${(req.user as User).id}-${uniqueSuffix}.${extension}`); 
+        const extension = file.mimetype.split('/').pop(); 
+        const userId = (req.user as User)?.id || 'unknown';
+        cb(null, `${userId}-${uniqueSuffix}.${extension}`);
       },
     }),
   }))
@@ -43,8 +44,8 @@ export class ProfileController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 10 }),
-          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 2 }), 
+          new FileTypeValidator({ fileType: /^image\/(jpeg|png|jpg)$/ }),
         ],
       }),
     ) file: Express.Multer.File
@@ -52,6 +53,7 @@ export class ProfileController {
     const filePath = `/uploads/profiles/${file.filename}`;
     return this.profileService.updateProfilePicture(user, filePath);
   }
+
 
   @Put('change-password')
   changePassword(@GetUser() user: User, @Body() changePasswordDto: ChangePasswordDto) {

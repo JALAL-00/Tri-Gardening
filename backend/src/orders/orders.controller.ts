@@ -30,8 +30,8 @@ export class OrdersController {
 
   @Get('orders')
   @UseGuards(CustomerGuard)
-  findAllForUser(@GetUser() user: User) {
-    return this.ordersService.findAllForUser(user);
+  findAllForUser(@GetUser() user: User, @Query('search') searchTerm?: string) {
+    return this.ordersService.findAllForUser(user, searchTerm);
   }
 
   @Get('orders/:id')

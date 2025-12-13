@@ -2,10 +2,9 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
-  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Repository, Between } from 'typeorm';
+import { DataSource, In, Repository, Between, ILike } from 'typeorm';
 import { ProductVariant } from 'src/products/entities/product-variant.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Order, OrderStatus } from './entities/order.entity';
@@ -25,13 +24,13 @@ export class OrdersService {
   ) {}
 
   private async generateOrderId(): Promise<string> {
-    const lastOrder = await this.orderRepository.find({
+    const lastOrder = await this.orderRepository.findOne({
+      where: {},
       order: { createdAt: 'DESC' },
-      take: 1,
     });
     const lastId =
-      lastOrder.length > 0
-        ? parseInt(lastOrder[0].orderId.split('-')[1])
+      lastOrder && lastOrder.orderId
+        ? parseInt(lastOrder.orderId.split('-')[1])
         : 0;
     return `TG-${(lastId + 1).toString().padStart(4, '0')}`;
   }
@@ -125,12 +124,25 @@ export class OrdersService {
     return this.orderRepository.save(order);
   }
 
-  async findAllForUser(user: User): Promise<Order[]> {
-    return this.orderRepository.find({
-      where: { user: { id: user.id } },
-      order: { createdAt: 'DESC' },
-      relations: ['items', 'items.variant'],
-    });
+  async findAllForUser(user: User, searchTerm?: string): Promise<Order[]> {
+    const queryBuilder = this.orderRepository.createQueryBuilder('order');
+
+    queryBuilder
+      .leftJoinAndSelect('order.items', 'item')
+      .leftJoinAndSelect('item.variant', 'variant') // Eager load variant details
+      .leftJoin('order.user', 'user') // Join user to filter by ID
+      .where('user.id = :userId', { userId: user.id });
+
+    if (searchTerm) {
+      queryBuilder.andWhere(
+        '(order.orderId ILIKE :searchTerm OR item.titleAtPurchase ILIKE :searchTerm)',
+        { searchTerm: `%${searchTerm}%` }
+      );
+    }
+    
+    queryBuilder.orderBy('order.createdAt', 'DESC');
+
+    return queryBuilder.getMany();
   }
 
   async findOneForUser(id: string, user: User): Promise<Order> {
