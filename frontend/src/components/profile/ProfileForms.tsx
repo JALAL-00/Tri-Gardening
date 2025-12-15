@@ -52,9 +52,6 @@ export default function ProfileForms() {
         mutationFn: updateProfile,
         onSuccess: (data) => {
             alert('Profile updated successfully!');
-            
-            // --- THIS IS THE FIX ---
-            // Save the new token returned from the backend to keep the session alive
             setToken(data.accessToken);
 
             queryClient.invalidateQueries({ queryKey: ['profile'] });
@@ -128,9 +125,12 @@ export default function ProfileForms() {
                             
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 flex-grow w-full">
                                 <div className="space-y-2"><Label htmlFor="fullName" className="text-green-600">Full Name</Label><Input id="fullName" {...registerProfile('fullName')} className="bg-gray-50 text-black" /></div>
-                                <div className="space-y-2"><Label htmlFor="phone" className="text-green-600">Phone Number *</Label><Input id="phone" value={profile?.phone} readOnly disabled className="bg-gray-200" /></div>
+                                <div className="space-y-2"><Label htmlFor="phone" className="text-green-600">Phone Number *</Label><Input id="phone" value={profile?.phone} readOnly disabled className="bg-gray-200 text-black" /></div>
+
                                 <div className="space-y-2"><Label htmlFor="thana" className="text-green-600">Thana <span className="text-gray-500">(Optional)</span></Label><Select><SelectTrigger className="bg-gray-50 text-black"><SelectValue placeholder="Dhaka" /></SelectTrigger></Select></div>
+
                                 <div className="space-y-2"><Label htmlFor="district" className="text-green-600">District *</Label><Select><SelectTrigger className="bg-gray-50 text-black"><SelectValue placeholder="Dhaka" /></SelectTrigger></Select></div>
+
                                 <div className="sm:col-span-2 space-y-2"><Label htmlFor="email" className="text-green-600">Email Address <span className="text-gray-500 font-medium">(Optional)</span></Label><Input id="email" type="email" {...registerProfile('email')} className="bg-gray-50 text-black" /></div>
                                 <div className="sm:col-span-2 space-y-2"><Label htmlFor="secondaryPhone" className="text-green-600">Secondary Number <span className="text-gray-500 font-medium">(Optional)</span></Label><Input id="secondaryPhone" placeholder="+8801234567890" className="bg-gray-50 text-black" /></div>
                             </div>
@@ -162,7 +162,7 @@ export default function ProfileForms() {
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div className="space-y-2"><Label htmlFor="newPassword" className="text-green-600">New Password</Label><Input id="newPassword" type="password" {...registerPassword('newPassword')} className="bg-gray-50 text-black" required /></div>
-                                <div className="space-y-2"><Label>Confirm New Password</Label><Input type="password" className="bg-gray-50 text-black" required /></div>
+                                <div className="space-y-2"><Label className="text-green-600">Confirm New Password</Label><Input type="password" className="bg-gray-50 text-black" required /></div>
                             </div>
                              <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={passwordMutation.isPending}>
                                 {passwordMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

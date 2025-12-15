@@ -3,14 +3,16 @@
 import { useAuthStore } from "@/store/authStore";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Loader2, User, MapPin, ShoppingBag, LogOut } from "lucide-react";
+import { Loader2, User, MapPin, ShoppingBag, LogOut, Share2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const sidebarNavItems = [
-    { href: '/profile', label: 'My Profile', icon: User },
+    { href: '/dashboard', label: 'Dashboard', icon: User },
+    { href: '/profile', label: 'My Profile', icon: User }, 
     { href: '/orders', label: 'My Orders', icon: ShoppingBag },
     { href: '/addresses', label: 'My Addresses', icon: MapPin },
+    { href: '/referrals', label: 'Referral Program', icon: Share2 },
 ];
 
 export default function CustomerDashboardLayout({ children }: { children: React.ReactNode }) {
@@ -24,7 +26,6 @@ export default function CustomerDashboardLayout({ children }: { children: React.
     useEffect(() => {
         setIsClient(true);
         setIsHydrated(true);
-        // We add a check for isClient before redirecting
         if (typeof window !== 'undefined' && !isAuthenticated) {
             router.push('/login');
         }
@@ -35,7 +36,6 @@ export default function CustomerDashboardLayout({ children }: { children: React.
         router.push('/');
     };
     
-    // Check isClient first to prevent server/client mismatch on isAuthenticated
     if (!isClient) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -44,9 +44,7 @@ export default function CustomerDashboardLayout({ children }: { children: React.
         );
     }
     
-    // After client has mounted, we can safely check isAuthenticated
     if (!isAuthenticated) {
-        // This will be shown for a split second before the useEffect redirects
         return (
             <div className="flex min-h-screen items-center justify-center bg-gray-100">
                 <Loader2 className="h-16 w-16 animate-spin text-green-600" />

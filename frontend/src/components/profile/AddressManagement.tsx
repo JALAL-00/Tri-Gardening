@@ -123,7 +123,7 @@ export default function AddressManagement() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="thana">Thana *</Label>
+                                <Label htmlFor="thana" className="text-green-600">Thana *</Label>
                                 <Controller
                                     name="thana"
                                     control={control}
@@ -140,7 +140,7 @@ export default function AddressManagement() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="district">District *</Label>
+                                <Label htmlFor="district" className="text-green-600">District *</Label>
                                 <Controller
                                     name="district"
                                     control={control}
@@ -158,7 +158,7 @@ export default function AddressManagement() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="fullAddress">Full Address <span className="text-gray-500">(Optional)</span></Label>
+                            <Label htmlFor="fullAddress" className="text-green-600">Full Address <span className="text-gray-500">(Optional)</span></Label>
                             <Textarea id="fullAddress" {...register('fullAddress')} className="bg-gray-50 text-black" />
                         </div>
                         <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
