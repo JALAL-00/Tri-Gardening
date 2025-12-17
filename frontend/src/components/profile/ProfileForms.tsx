@@ -56,16 +56,27 @@ export default function ProfileForms() {
 
             queryClient.invalidateQueries({ queryKey: ['profile'] });
         },
-        onError: (error: any) => alert(error.response?.data?.message || 'Failed to update profile.'),
+        onError: (error: any) => {
+            console.error('Profile update error:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to update profile.';
+            alert(`Error: ${errorMessage}`);
+        },
     });
-    
+
     const pictureMutation = useMutation({
         mutationFn: uploadProfilePicture,
-        onSuccess: () => {
+        onSuccess: (data) => {
+            console.log('Picture upload response:', data);
             alert('Profile picture updated!');
+            // Force refetch the profile
             queryClient.invalidateQueries({ queryKey: ['profile'] });
+            queryClient.refetchQueries({ queryKey: ['profile'] });
         },
-        onError: (error: any) => alert(error.response?.data?.message || 'Failed to upload picture.'),
+        onError: (error: any) => {
+            console.error('Picture upload error:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to upload picture.';
+            alert(`Error: ${errorMessage}`);
+        },
     });
 
     const passwordMutation = useMutation({
@@ -74,17 +85,37 @@ export default function ProfileForms() {
             alert('Password changed successfully!');
             resetPasswordForm();
         },
-        onError: (error: any) => alert(error.response?.data?.message || 'Failed to change password.'),
+        onError: (error: any) => {
+            console.error('Password change error:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to change password.';
+            alert(`Error: ${errorMessage}`);
+        },
     });
-    
+
     const constructImageUrl = (path: string | null) => {
         if (!path) return "/placeholder-avatar.jpg";
-        return `http://localhost:5005${path}`;
+        // Remove any spaces from the path (in case of old buggy data)
+        const cleanPath = path.replace(/\s+/g, '');
+        return `http://localhost:5005${cleanPath}`;
     };
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alert('Invalid file type. Please upload a JPEG, PNG, or WebP image.');
+                return;
+            }
+
+            // Validate file size (5MB max)
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if (file.size > maxSize) {
+                alert('File is too large. Maximum size is 5MB.');
+                return;
+            }
+
             pictureMutation.mutate(file);
         }
     };
@@ -113,7 +144,17 @@ export default function ProfileForms() {
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-8 items-start">
                             <div className="flex flex-col items-center gap-4 w-full md:w-auto">
-                                <Image src={constructImageUrl(profile?.profilePictureUrl)} alt="Profile Picture" width={128} height={128} className="rounded-full w-32 h-32 object-cover border-4 border-gray-100" />
+                                <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-100">
+                                    <Image
+                                        key={profile?.profilePictureUrl || 'placeholder'}
+                                        src={constructImageUrl(profile?.profilePictureUrl)}
+                                        alt="Profile Picture"
+                                        fill
+                                        className="object-cover"
+                                        sizes="128px"
+                                        unoptimized
+                                    />
+                                </div>
                                 <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" accept="image/*" />
                                 <div className="flex gap-2">
                                     <Button type="button" size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => fileInputRef.current?.click()}>
@@ -122,7 +163,7 @@ export default function ProfileForms() {
                                     <Button type="button" variant="outline" size="sm">Remove</Button>
                                 </div>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 flex-grow w-full">
                                 <div className="space-y-2"><Label htmlFor="fullName" className="text-green-600">Full Name</Label><Input id="fullName" {...registerProfile('fullName')} className="bg-gray-50 text-black" /></div>
                                 <div className="space-y-2"><Label htmlFor="phone" className="text-green-600">Phone Number *</Label><Input id="phone" value={profile?.phone} readOnly disabled className="bg-gray-200 text-black" /></div>
@@ -149,7 +190,7 @@ export default function ProfileForms() {
                         <h3 className="font-semibold text-lg text-gray-800">Change Password</h3>
                         <p className="text-sm text-gray-500">Change Your Password</p>
                         <form onSubmit={handleSubmitPassword(data => passwordMutation.mutate(data))} className="mt-4 space-y-4 max-w-lg">
-                           <div className="space-y-2 relative">
+                            <div className="space-y-2 relative">
                                 <Label htmlFor="currentPassword" className="text-green-600">Current Password</Label>
                                 <Input id="currentPassword" type={showCurrentPassword ? 'text' : 'password'} {...registerPassword('currentPassword')} className="bg-gray-50 text-black pr-10" required />
                                 <button
@@ -164,7 +205,7 @@ export default function ProfileForms() {
                                 <div className="space-y-2"><Label htmlFor="newPassword" className="text-green-600">New Password</Label><Input id="newPassword" type="password" {...registerPassword('newPassword')} className="bg-gray-50 text-black" required /></div>
                                 <div className="space-y-2"><Label className="text-green-600">Confirm New Password</Label><Input type="password" className="bg-gray-50 text-black" required /></div>
                             </div>
-                             <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={passwordMutation.isPending}>
+                            <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={passwordMutation.isPending}>
                                 {passwordMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Change Password
                             </Button>

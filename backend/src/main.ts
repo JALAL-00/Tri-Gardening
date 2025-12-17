@@ -18,8 +18,17 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true,
+      forbidNonWhitelisted: false, // Changed to false to allow extra fields
       transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+      exceptionFactory: (errors) => {
+        const messages = errors.map(
+          (error) => `${error.property}: ${Object.values(error.constraints || {}).join(', ')}`
+        );
+        return new Error(`Validation failed: ${messages.join('; ')}`);
+      },
     }),
   );
 

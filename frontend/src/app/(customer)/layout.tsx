@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 const sidebarNavItems = [
     { href: '/dashboard', label: 'Dashboard', icon: User },
-    { href: '/profile', label: 'My Profile', icon: User }, 
+    { href: '/profile', label: 'My Profile', icon: User },
     { href: '/orders', label: 'My Orders', icon: ShoppingBag },
     { href: '/addresses', label: 'My Addresses', icon: MapPin },
     { href: '/referrals', label: 'Referral Program', icon: Share2 },
@@ -21,29 +21,47 @@ export default function CustomerDashboardLayout({ children }: { children: React.
     const pathname = usePathname();
 
     const [isClient, setIsClient] = useState(false);
-    const [isHydrated, setIsHydrated] = useState(false);
+    const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
-        setIsHydrated(true);
-        if (typeof window !== 'undefined' && !isAuthenticated) {
-            router.push('/login');
-        }
-    }, [isHydrated, isAuthenticated, router]);
+    }, []);
+
+    useEffect(() => {
+        if (!isClient || hasCheckedAuth) return;
+
+        // Check if Zustand store has hydrated from localStorage
+        const checkAuth = () => {
+            const storageItem = localStorage.getItem('auth-storage');
+            if (storageItem) {
+                const { state } = JSON.parse(storageItem);
+                if (!state.isAuthenticated) {
+                    router.push('/login');
+                }
+            } else if (!isAuthenticated) {
+                router.push('/login');
+            }
+            setHasCheckedAuth(true);
+        };
+
+        // Small delay to ensure hydration is complete
+        const timer = setTimeout(checkAuth, 50);
+        return () => clearTimeout(timer);
+    }, [isClient, hasCheckedAuth, router]);
 
     const handleLogout = () => {
         logout();
         router.push('/');
     };
-    
-    if (!isClient) {
+
+    if (!isClient || !hasCheckedAuth) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-gray-100">
                 <Loader2 className="h-16 w-16 animate-spin text-green-600" />
             </div>
         );
     }
-    
+
     if (!isAuthenticated) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -51,7 +69,7 @@ export default function CustomerDashboardLayout({ children }: { children: React.
             </div>
         );
     }
-    
+
     return (
         <div className="bg-[#FEFBF6]">
             <div className="container mx-auto px-4 md:px-6 py-12">
@@ -63,15 +81,14 @@ export default function CustomerDashboardLayout({ children }: { children: React.
                             <nav className="space-y-2">
                                 {sidebarNavItems.map(item => (
                                     <Link key={item.href} href={item.href} passHref>
-                                        <div className={`flex items-center gap-3 p-3 rounded-md transition-colors cursor-pointer ${
-                                            pathname === item.href 
-                                            ? 'bg-green-100 text-green-800 font-semibold' 
+                                        <div className={`flex items-center gap-3 p-3 rounded-md transition-colors cursor-pointer ${pathname === item.href
+                                            ? 'bg-green-100 text-green-800 font-semibold'
                                             : 'text-gray-600 hover:bg-gray-100'
-                                        }`}>
+                                            }`}>
                                             <item.icon className="h-5 w-5" />
                                             <span>{item.label}</span>
                                         </div>
-                                    </Link> 
+                                    </Link>
                                 ))}
                                 <Button onClick={handleLogout} variant="ghost" className="w-full justify-start flex items-center gap-3 p-3 text-red-600 hover:bg-red-50 hover:text-red-700">
                                     <LogOut className="h-5 w-5" />
