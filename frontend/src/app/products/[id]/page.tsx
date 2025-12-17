@@ -11,6 +11,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Loader2, Minus, Plus, Star } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
+import ReviewsSection from '@/components/products/ReviewsSection';
+import WriteReviewModal from '@/components/products/WriteReviewModal';
 
 // Define the type for the full product data we expect from the API
 type ProductVariant = {
@@ -26,6 +28,7 @@ type Review = {
   comment: string;
   user: { fullName: string };
   createdAt: string;
+  officialReply?: string;
 };
 type Product = {
   id: string;
@@ -44,17 +47,16 @@ const getProduct = async (id: string): Promise<Product> => {
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const { id: productId } = params;
   const addItemToCart = useCartStore((state) => state.addItem);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const { data: product, isLoading, isError } = useQuery({
     queryKey: ['product', productId],
     queryFn: () => getProduct(productId),
   });
 
-  // State for the selected variant and quantity
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
 
-  // Effect to set the default selected variant when data loads
   useEffect(() => {
     if (product && product.variants.length > 0 && !selectedVariantId) {
       setSelectedVariantId(product.variants[0].id);
@@ -64,7 +66,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const selectedVariant = product?.variants.find(v => v.id === selectedVariantId);
   const displayPrice = selectedVariant ? parseFloat(selectedVariant.price as any) : 0;
 
-  // Construct the full, absolute URL for the image
   const imagePath = selectedVariant?.images[0];
   const imageUrl = imagePath
     ? `http://localhost:5005${imagePath}`
@@ -92,93 +93,99 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   }
 
   return (
-    <div className="bg-white text-gray-800">
-      <div className="container mx-auto px-4 md:px-6 py-12">
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-          {/* Image Gallery */}
-          <div>
-            <div className="aspect-square w-full rounded-lg overflow-hidden mb-4 border">
-              <Image
-                src={imageUrl}
-                alt={product.name}
-                width={600}
-                height={600}
-                className="w-full h-full object-cover"
-              />
+    <>
+      <div className="bg-white text-gray-800">
+        <div className="container mx-auto px-4 md:px-6 py-12">
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+            {/* Image Gallery */}
+            <div>
+              <div className="aspect-square w-full rounded-lg overflow-hidden mb-4 border">
+                <Image
+                  src={imageUrl}
+                  alt={product.name}
+                  width={600}
+                  height={600}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-            {/* Thumbnails would go here */}
-          </div>
 
-          {/* Product Details */}
-          <div className="space-y-4">
-            <h1 className="text-3xl lg:text-4xl font-bold text-green-900">{product.name}</h1>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 text-yellow-500">
-                <Star className="w-5 h-5 fill-current" />
-                <Star className="w-5 h-5 fill-current" />
-                <Star className="w-5 h-5 fill-current" />
-                <Star className="w-5 h-5 fill-current" />
-                <Star className="w-5 h-5 text-gray-300" />
+            {/* Product Details */}
+            <div className="space-y-4">
+              <h1 className="text-3xl lg:text-4xl font-bold text-green-900">{product.name}</h1>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 text-yellow-500">
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 text-gray-300" />
+                </div>
+                <span className="text-gray-600">({product.reviews.length} reviews)</span>
               </div>
-              <span className="text-gray-600">({product.reviews.length} reviews)</span>
-            </div>
-            
-            <p className="text-3xl font-bold text-green-800">৳{(displayPrice * quantity).toFixed(2)}</p>
-            
-            <Separator />
-            
-            {/* Variant Selection */}
-            <div>
-              <Label className="text-lg font-semibold">Size</Label>
-              <RadioGroup
-                value={selectedVariantId || ''}
-                onValueChange={setSelectedVariantId}
-                className="flex items-center gap-4 mt-2"
-              >
-                {product.variants.map(variant => (
-                  <div key={variant.id}>
-                    <RadioGroupItem value={variant.id} id={variant.id} className="sr-only" />
-                    <Label
-                      htmlFor={variant.id}
-                      className={`flex items-center justify-center rounded-md border-2 p-3 text-sm font-medium hover:bg-gray-50 cursor-pointer 
-                        ${selectedVariantId === variant.id ? 'border-green-600 ring-2 ring-green-600' : 'border-gray-200'}`}
-                    >
-                      {variant.title}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </div>
-            
-            <p className="text-sm text-gray-500">
-              {selectedVariant?.stock ? `In Stock: ${selectedVariant.stock} available` : 'Out of Stock'}
-            </p>
-            
-            <Separator />
-            
-            {/* Quantity and Add to Cart */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 rounded-lg border border-gray-300 p-2">
-                <Button variant="ghost" size="icon" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
-                <span className="w-10 text-center font-semibold">{quantity}</span>
-                <Button variant="ghost" size="icon" onClick={() => setQuantity(q => q + 1)}><Plus className="h-4 w-4" /></Button>
+              
+              <p className="text-3xl font-bold text-green-800">৳{(displayPrice * quantity).toFixed(2)}</p>
+              
+              <Separator />
+              
+              <div>
+                <Label className="text-lg font-semibold">Size</Label>
+                <RadioGroup
+                  value={selectedVariantId || ''}
+                  onValueChange={setSelectedVariantId}
+                  className="flex items-center gap-4 mt-2"
+                >
+                  {product.variants.map(variant => (
+                    <div key={variant.id}>
+                      <RadioGroupItem value={variant.id} id={variant.id} className="sr-only" />
+                      <Label
+                        htmlFor={variant.id}
+                        className={`flex items-center justify-center rounded-md border-2 p-3 text-sm font-medium hover:bg-gray-50 cursor-pointer ${selectedVariantId === variant.id ? 'border-green-600 ring-2 ring-green-600' : 'border-gray-200'}`}
+                      >
+                        {variant.title}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
               </div>
-              <Button size="lg" className="flex-1 bg-green-600 hover:bg-green-700" onClick={handleAddToCart} disabled={!selectedVariant || selectedVariant.stock < 1}>
-                Add to Cart
-              </Button>
-            </div>
-            
-            <Separator />
-            
-            {/* Description */}
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Description</h3>
-              <p className="text-gray-600">{product.description}</p>
+              
+              <p className="text-sm text-gray-500">
+                {selectedVariant?.stock ? `In Stock: ${selectedVariant.stock} available` : 'Out of Stock'}
+              </p>
+              
+              <Separator />
+              
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 rounded-lg border border-gray-300 p-2">
+                  <Button variant="ghost" size="icon" onClick={() => setQuantity(q => Math.max(1, q - 1))}><Minus className="h-4 w-4" /></Button>
+                  <span className="w-10 text-center font-semibold">{quantity}</span>
+                  <Button variant="ghost" size="icon" onClick={() => setQuantity(q => q + 1)}><Plus className="h-4 w-4" /></Button>
+                </div>
+                <Button size="lg" className="flex-1 bg-green-600 hover:bg-green-700" onClick={handleAddToCart} disabled={!selectedVariant || selectedVariant.stock < 1}>
+                  Add to Cart
+                </Button>
+              </div>
+              
+              <Separator />
+              
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Description</h3>
+                <p className="text-gray-600">{product.description}</p>
+              </div>
             </div>
           </div>
+          
+          <Separator className="my-12" />
+          <ReviewsSection reviews={product.reviews} onWriteReviewClick={() => setIsReviewModalOpen(true)} />
         </div>
-        {/* Reviews Section would go here */}
       </div>
-    </div>
+      
+      <WriteReviewModal 
+        productId={product.id}
+        productName={product.name}
+        isOpen={isReviewModalOpen}
+        onOpenChange={setIsReviewModalOpen}
+      />
+    </>
   );
 }

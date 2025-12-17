@@ -88,7 +88,7 @@ const config = {
   		}
   	}
   },
-  plugins: [animate,] // <-- USE the imported plugin here, instead of require()
+  plugins: [animate, require("@tailwindcss/typography")] // <-- USE the imported plugin here, instead of require()
 }
 
 export default config
