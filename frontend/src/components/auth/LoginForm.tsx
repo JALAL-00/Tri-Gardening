@@ -15,14 +15,14 @@ import { Facebook, Chrome, Loader2, Eye, EyeOff } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
 
-// LoginData and loginUser function remain the same
 interface LoginData { phone: string; password: string; }
 const loginUser = async (data: LoginData) => {
   const response = await api.post('/auth/login', data);
   return response.data;
 };
 
-export default function LoginForm() {
+// Accept an optional title prop
+export default function LoginForm({ title = "Login to your Account" }: { title?: string }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +34,9 @@ export default function LoginForm() {
     mutationFn: loginUser,
     onSuccess: (data) => {
       setToken(data.accessToken);
-      router.push('/profile');
+      // Instead of a hardcoded redirect, just reload the page.
+      // The parent component (e.g., the modal) can then decide what to do.
+      window.location.reload(); 
     },
     onError: (error) => {
       console.error("Login failed:", error);
@@ -50,7 +52,7 @@ export default function LoginForm() {
     <Card className="w-full max-w-md bg-green-950/40 backdrop-blur-xl border border-green-500/30 text-primary-foreground shadow-2xl">
       <CardHeader className="text-center space-y-2">
         <CardTitle className="text-3xl font-bold text-white">
-          Login to your Account
+          {title} {/* Use the title prop here */}
         </CardTitle>
         <CardDescription className="text-green-200/90">
           To see update on your orders
@@ -60,7 +62,6 @@ export default function LoginForm() {
       <CardContent className="px-8 pb-8">
         <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* PHONE NUMBER */}
           <div className="space-y-2 text-left">
             <Label htmlFor="phone" className="text-green-100">Phone Number</Label>
             <Input
@@ -74,10 +75,8 @@ export default function LoginForm() {
             />
           </div>
 
-          {/* PASSWORD WITH SHOW/HIDE ICON */}
           <div className="space-y-2 text-left relative">
             <Label htmlFor="password" className="text-green-100">Password</Label>
-
             <div className="relative">
               <Input
                 id="password"
@@ -88,23 +87,16 @@ export default function LoginForm() {
                 className="bg-white/10 border-green-400/50 text-white placeholder:text-green-300/70 focus:ring-green-400 focus:border-green-400 pr-12"
                 required
               />
-
-              {/* Eye Toggle Button */}
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-3 flex items-center text-green-200 hover:text-white"
               >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
           </div>
 
-          {/* REMEMBER + FORGOT */}
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-2">
               <Checkbox id="remember" className="border-green-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500" />
@@ -131,7 +123,6 @@ export default function LoginForm() {
           </Button>
         </form>
 
-        {/* SOCIAL LOGIN */}
         <div className="mt-6 flex items-center justify-center">
           <div className="grid grid-cols-2 gap-4 w-full">
             <Button variant="outline" className="bg-transparent border border-blue-500/50 text-white hover:bg-blue-500/20 hover:border-blue-500">
@@ -143,7 +134,6 @@ export default function LoginForm() {
           </div>
         </div>
 
-        {/* REGISTER LINK */}
         <div className="mt-8 text-center text-sm">
           <Link href="/register" passHref>
             <span className="font-semibold text-green-200 hover:text-white hover:underline transition-colors">

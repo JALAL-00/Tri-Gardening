@@ -59,9 +59,9 @@ export default function ReviewsSection({ reviews, onWriteReviewClick }: ReviewsS
             <div className="space-y-2">
               {ratingDistribution.map(item => (
                 <div key={item.star} className="flex items-center gap-2 text-sm">
-                  <span>{item.star} Star</span>
+                  <span className="font-medium text-green-900">{item.star} Star</span>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-yellow-400 h-2.5 rounded-full" style={{ width: `${item.percentage}%` }}></div>
+                    <div className="bg-yellow-00 h-2.5 rounded-full" style={{ width: `${item.percentage}%` }}></div>
                   </div>
                   <span className="w-8 text-right text-gray-500">{item.count}</span>
                 </div>

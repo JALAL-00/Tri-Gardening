@@ -18,6 +18,7 @@ import { PageContentModule } from './page-content/page-content.module';
 import { ProfileModule } from './profile/profile.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { MulterModule } from '@nestjs/platform-express'
+import { PlantClinicModule } from './plant-clinic/plant-clinic.module';
 
 @Module({
   imports: [
@@ -53,7 +54,8 @@ import { MulterModule } from '@nestjs/platform-express'
     ReviewsModule, 
     PageContentModule, 
     ProfileModule, 
-    AddressesModule,
+    AddressesModule, 
+    PlantClinicModule,
   ],
   controllers: [AppController],
   providers: [AppService],
