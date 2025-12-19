@@ -1,4 +1,3 @@
-// src/users/entities/user.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -50,8 +49,20 @@ export class User {
   @Column({ type: 'varchar', nullable: true })
   profilePictureUrl: string | null;
 
+  // --- Referral System ---
   @Column({ type: 'varchar', unique: true, nullable: true })
   referralCode: string | null;
+
+  @Column({ type: 'decimal', default: 0 })
+  walletBalance: number; // Credits earned
+
+  // --- Security / 2FA ---
+  @Column({ type: 'boolean', default: false })
+  twoFactorEnabled: boolean;
+
+  @Column({ type: 'varchar', nullable: true })
+  @Exclude()
+  twoFactorSecret: string | null;
 
   @BeforeInsert()
   generateReferralCode() {

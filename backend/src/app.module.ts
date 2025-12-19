@@ -1,4 +1,3 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -17,8 +16,10 @@ import { ReviewsModule } from './reviews/reviews.module';
 import { PageContentModule } from './page-content/page-content.module';
 import { ProfileModule } from './profile/profile.module';
 import { AddressesModule } from './addresses/addresses.module';
-import { MulterModule } from '@nestjs/platform-express'
+import { MulterModule } from '@nestjs/platform-express';
 import { PlantClinicModule } from './plant-clinic/plant-clinic.module';
+import { SettingsModule } from './settings/settings.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -37,25 +38,23 @@ import { PlantClinicModule } from './plant-clinic/plant-clinic.module';
         synchronize: true, 
       }),
     }),
-
-    MulterModule.register({
-      dest: './uploads',
-    }),
-
+    MulterModule.register({ dest: './uploads' }),
     CommonModule,
     AuthModule,
     UsersModule,
-    CategoriesModule, 
-    ProductsModule,   
-    UploadsModule, 
-    TagsModule, 
-    BlogsModule, 
-    OrdersModule, 
-    ReviewsModule, 
-    PageContentModule, 
-    ProfileModule, 
-    AddressesModule, 
+    CategoriesModule,
+    ProductsModule,
+    UploadsModule,
+    TagsModule,
+    BlogsModule,
+    OrdersModule,
+    ReviewsModule,
+    PageContentModule,
+    ProfileModule,
+    AddressesModule,
     PlantClinicModule,
+    SettingsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

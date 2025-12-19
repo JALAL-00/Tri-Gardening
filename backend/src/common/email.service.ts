@@ -31,7 +31,6 @@ export class EmailService {
       console.log('Email sent successfully');
     } catch (error) {
       console.error('Error sending email:', error);
-      // In a real app, you might throw an exception or handle this more gracefully
     }
   }
 }

@@ -8,7 +8,6 @@ export class UpdateProfileDto {
   @IsOptional()
   email?: string;
 
-  // This will be used after the frontend uploads a picture to /uploads/image
   @IsString()
   @IsOptional()
   profilePictureUrl?: string;

@@ -38,27 +38,11 @@ export class CategoriesController {
     return this.categoriesService.findOne(id);
   }
 
-  // --- UPDATE ---
-  // Option 1: REST-style with URL param
-  // @Patch(':id')
-  // update(@Param('id', ParseUUIDPipe) id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
-  //   return this.categoriesService.update(id, updateCategoryDto);
-  // }
-
-  // Option 2: Refactored DTO-based
   @Patch()
   update(@Body() updateCategoryDto: UpdateCategoryDto) {
     return this.categoriesService.update(updateCategoryDto.id, updateCategoryDto);
   }
 
-  // --- REMOVE ---
-  // Option 1: REST-style with URL param
-  // @Delete(':id')
-  // remove(@Param('id', ParseUUIDPipe) id: string) {
-  //   return this.categoriesService.remove(id);
-  // }
-
-  // Option 2: Refactored DTO-based
   @Delete()
   remove(@Body() deleteCategoryDto: DeleteCategoryDto) {
     return this.categoriesService.remove(deleteCategoryDto.id);

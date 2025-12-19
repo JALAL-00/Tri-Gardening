@@ -17,8 +17,8 @@ export class OrderItem {
   quantity: number;
 
   @Column({ type: 'varchar' })
-  titleAtPurchase: string; // Snapshot of the variant title
+  titleAtPurchase: string; 
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  priceAtPurchase: number; // Snapshot of the price
+  priceAtPurchase: number; 
 }

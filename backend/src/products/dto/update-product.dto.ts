@@ -1,57 +1,52 @@
 import { Type } from 'class-transformer';
 import {
-  IsArray,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-  ValidateNested,
-  IsBoolean,
+  IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, ValidateNested, IsBoolean, IsDateString
 } from 'class-validator';
 import { ProductStatus } from '../entities/product.entity';
 
 export class UpdateProductVariantDto {
-  @IsUUID()
-  @IsOptional()
+  @IsUUID() @IsOptional()
   id?: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString() @IsNotEmpty()
   title: string;
 
   @IsNumber()
   price: number;
 
+  @IsNumber() @IsOptional()
+  buyingPrice?: number;
+
   @IsNumber()
   stock: number;
 
-  @IsArray()
-  @IsString({ each: true })
-  @IsOptional()
+  @IsNumber() @IsOptional()
+  stockAlertLimit?: number;
+
+  @IsDateString() @IsOptional()
+  expiryDate?: string;
+
+  @IsString() @IsOptional()
+  color?: string;
+
+  @IsArray() @IsString({ each: true }) @IsOptional()
   images?: string[];
 }
 
 export class UpdateProductDto {
-  @IsUUID()
-  @IsNotEmpty()
+  @IsUUID() @IsNotEmpty()
   id: string;
 
-  @IsString()
-  @IsOptional()
+  @IsString() @IsOptional()
   name?: string;
 
-  @IsString()
-  @IsOptional()
+  @IsString() @IsOptional()
   description?: string;
 
-  @IsUUID()
-  @IsOptional()
+  @IsUUID() @IsOptional()
   categoryId?: string;
 
-  @IsEnum(ProductStatus)
-  @IsOptional()
+  @IsEnum(ProductStatus) @IsOptional()
   status?: ProductStatus;
 
   @IsArray()
@@ -60,7 +55,6 @@ export class UpdateProductDto {
   @IsOptional()
   variants?: UpdateProductVariantDto[];
 
-  @IsBoolean()
-  @IsOptional()
+  @IsBoolean() @IsOptional()
   isFeatured?: boolean;
 }

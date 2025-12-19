@@ -7,6 +7,6 @@ export class VerifyOtpDto {
 
   @IsString()
   @IsNotEmpty()
-  @Length(4, 4, { message: 'OTP must be exactly 4 digits' }) // Assuming a 4-digit OTP from Figma
+  @Length(4, 4, { message: 'OTP must be exactly 4 digits' }) 
   otp: string;
 }

@@ -20,7 +20,6 @@ export class TagsController {
         return this.tagsService.findAll();
     }
 
-    // Keep findOne RESTful for simplicity, as it has no body
     @Get(':id')
     findOne(@Param('id', ParseUUIDPipe) id: string) {
         return this.tagsService.findOne(id);

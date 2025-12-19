@@ -23,8 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  // This method runs after the token is validated.
-  // It attaches the user object to the request.
   async validate(payload: { id: string; phone: string; role: string }): Promise<User> {
     const { id } = payload;
     const user = await this.userRepository.findOne({ where: { id } });
@@ -32,6 +30,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user; // request.user will be this user object
+    return user; 
   }
 }

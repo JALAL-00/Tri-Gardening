@@ -1,29 +1,32 @@
-// src/products/dto/create-product.dto.ts
 import {
-  IsString,
-  IsNotEmpty,
-  IsEnum,
-  IsArray,
-  ValidateNested,
-  IsUUID,
-  IsNumber,
-  IsOptional,
-  ArrayMinSize,
-  IsBoolean,
+  IsString, IsNotEmpty, IsEnum, IsArray, ValidateNested, IsUUID, IsNumber, IsOptional, ArrayMinSize, IsBoolean, IsDateString
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ProductStatus } from '../entities/product.entity';
 
 class CreateProductVariantDto {
-  @IsString()
-  @IsNotEmpty()
+  @IsString() @IsNotEmpty()
   title: string;
 
   @IsNumber()
   price: number;
 
   @IsNumber()
+  buyingPrice: number;
+
+  @IsNumber()
   stock: number;
+
+  @IsNumber()
+  stockAlertLimit: number;
+
+  @IsDateString()
+  @IsOptional()
+  expiryDate?: string;
+
+  @IsString()
+  @IsOptional()
+  color?: string;
 
   @IsArray()
   @IsString({ each: true })
@@ -32,16 +35,13 @@ class CreateProductVariantDto {
 }
 
 export class CreateProductDto {
-  @IsString()
-  @IsNotEmpty()
+  @IsString() @IsNotEmpty()
   name: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString() @IsNotEmpty()
   description: string;
 
-  @IsUUID()
-  @IsNotEmpty()
+  @IsUUID() @IsNotEmpty()
   categoryId: string;
 
   @IsEnum(ProductStatus)
@@ -53,7 +53,6 @@ export class CreateProductDto {
   @Type(() => CreateProductVariantDto)
   variants: CreateProductVariantDto[];
 
-  @IsBoolean()
-  @IsOptional()
+  @IsBoolean() @IsOptional()
   isFeatured?: boolean;
 }

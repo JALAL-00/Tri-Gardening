@@ -27,7 +27,7 @@ export class RegisterUserDto {
   @IsNotEmpty()
   fullName: string;
 
-  @IsPhoneNumber('BD') // Example for Bangladesh phone number validation
+  @IsPhoneNumber('BD') 
   @IsNotEmpty()
   phone: string;
 

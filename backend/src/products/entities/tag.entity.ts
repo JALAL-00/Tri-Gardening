@@ -15,13 +15,9 @@ export class Tag {
   @Column({ type: 'varchar', unique: true })
   name: string;
 
-  // --- RELATIONS ---
-
-  // Many-to-many with products
   @ManyToMany(() => Product, (product) => product.tags)
   products: Product[];
 
-  // Many-to-many with blogs
   @ManyToMany(() => Blog, (blog) => blog.tags)
   blogs: Blog[];
   

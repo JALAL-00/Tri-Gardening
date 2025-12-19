@@ -16,7 +16,6 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // A custom, human-readable order ID
   @Column({ type: 'varchar', unique: true })
   orderId: string;
   

@@ -13,18 +13,12 @@ import { DeleteReviewDto } from './dto/delete-review.dto';
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
-  // -------------------------------
-  // 🛒 CUSTOMER ENDPOINT
-  // -------------------------------
   @Post()
   @UseGuards(CustomerGuard)
   create(@Body() createReviewDto: CreateReviewDto, @GetUser() user: User) {
     return this.reviewsService.create(createReviewDto, user);
   }
 
-  // -------------------------------
-  // 🛠 ADMIN ENDPOINTS
-  // -------------------------------
   @Get('admin')
   @UseGuards(AdminGuard)
   findAllAdmin(@Query() queryDto: FindReviewsQueryDto) {

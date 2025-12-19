@@ -7,7 +7,6 @@ export class PublicTagsController {
 
   @Get()
   findAll() {
-    // We can reuse the existing service method
     return this.tagsService.findAll();
   }
 }

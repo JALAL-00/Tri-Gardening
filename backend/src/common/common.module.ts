@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { EmailService } from './email.service';
 
-@Global() // Makes the EmailService available everywhere without needing to import CommonModule
+@Global() 
 @Module({
   providers: [EmailService],
   exports: [EmailService],

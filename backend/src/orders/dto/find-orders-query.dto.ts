@@ -8,5 +8,5 @@ export class FindOrdersQueryDto {
 
   @IsDateString()
   @IsOptional()
-  date?: string; // e.g., '2023-10-27'
+  date?: string; 
 }
