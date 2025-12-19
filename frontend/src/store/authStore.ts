@@ -23,3 +23,7 @@ export const useAuthStore = create<AuthState>()(
     },
   ),
 );
+
+export const getAuthToken = (): string | null => {
+  return useAuthStore.getState().token;
+};

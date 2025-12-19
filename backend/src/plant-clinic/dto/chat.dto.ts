@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 
 class HistoryItem {
   @IsString()
@@ -10,17 +10,15 @@ class HistoryItem {
 }
 
 export class ChatDto {
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => HistoryItem)
-  @IsOptional()
-  messages?: HistoryItem[];
-
   @IsString()
   @IsNotEmpty()
-  input: string; // The hook sends the current input separately
+  message: string;
 
   @IsString()
   @IsOptional()
-  image?: string; // The hook sends the custom body data merged in
+  image?: string; // Base64 string
+
+  @IsUUID()
+  @IsOptional()
+  sessionId?: string;
 }
