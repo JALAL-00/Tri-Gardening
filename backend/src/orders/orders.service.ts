@@ -4,9 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Repository, Between, ILike } from 'typeorm';
+import { DataSource, In, Repository, Between } from 'typeorm';
 import { ProductVariant } from 'src/products/entities/product-variant.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Referral } from 'src/users/entities/referral.entity'; 
 import { Order, OrderStatus } from './entities/order.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -20,6 +21,10 @@ export class OrdersService {
     private readonly orderRepository: Repository<Order>,
     @InjectRepository(ProductVariant)
     private readonly variantRepository: Repository<ProductVariant>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Referral)
+    private readonly referralRepository: Repository<Referral>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -35,8 +40,14 @@ export class OrdersService {
     return `TG-${(lastId + 1).toString().padStart(4, '0')}`;
   }
 
+  // --- CREATE ORDER (Wallet Logic Implemented) ---
   async create(createOrderDto: CreateOrderDto, user: User): Promise<Order> {
-    const { items, shippingAddress, deliveryCharge } = createOrderDto;
+    const { items, shippingAddress, deliveryCharge, useWallet } = createOrderDto;
+
+    // Fetch user fresh to get accurate wallet balance
+    const currentUser = await this.userRepository.findOne({ where: { id: user.id } });
+    if (!currentUser) throw new NotFoundException('User not found');
+
     const variantIds = items.map((item) => item.variantId);
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -57,9 +68,13 @@ export class OrdersService {
           throw new BadRequestException(
             `Not enough stock for ${variant.title}. Available: ${variant.stock}`,
           );
+        
+        // Stock Deduction
         variant.stock -= itemDto.quantity;
         await queryRunner.manager.save(variant);
-        subTotal += variant.price * itemDto.quantity;
+
+        subTotal += Number(variant.price) * itemDto.quantity;
+        
         const orderItem = new OrderItem();
         orderItem.variant = variant;
         orderItem.quantity = itemDto.quantity;
@@ -67,6 +82,27 @@ export class OrdersService {
         orderItem.priceAtPurchase = variant.price;
         orderItems.push(orderItem);
       }
+
+      const totalAmount = subTotal + deliveryCharge;
+      let walletDiscount = 0;
+      let payableAmount = totalAmount;
+
+      // Wallet Deduction Logic
+      if (useWallet && currentUser.walletBalance > 0) {
+        // Convert string/decimal to number for calculation
+        const currentBalance = Number(currentUser.walletBalance);
+        
+        if (currentBalance >= totalAmount) {
+           walletDiscount = totalAmount;
+           currentUser.walletBalance = currentBalance - totalAmount;
+        } else {
+           walletDiscount = currentBalance;
+           currentUser.walletBalance = 0;
+        }
+        payableAmount = totalAmount - walletDiscount;
+        await queryRunner.manager.save(currentUser); // Update user balance in DB
+      }
+
       const newOrder = this.orderRepository.create({
         orderId: await this.generateOrderId(),
         user,
@@ -74,7 +110,9 @@ export class OrdersService {
         items: orderItems,
         subTotal,
         deliveryCharge,
-        totalAmount: subTotal + deliveryCharge,
+        totalAmount,
+        walletDiscount,
+        payableAmount,
         status: OrderStatus.PROCESSING,
       });
       const savedOrder = await queryRunner.manager.save(newOrder);
@@ -86,6 +124,46 @@ export class OrdersService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  // --- UPDATE STATUS (Referral Reward Logic Implemented) ---
+  async updateStatus(updateOrderStatusDto: UpdateOrderStatusDto): Promise<Order> {
+    const { orderId, status } = updateOrderStatusDto;
+    const order = await this.orderRepository.findOne({ 
+      where: { orderId },
+      relations: ['user'] 
+    });
+    if (!order)
+      throw new NotFoundException(`Order with ID "${orderId}" not found.`);
+
+    // Check if status is changing TO Delivered
+    if (order.status !== OrderStatus.DELIVERED && status === OrderStatus.DELIVERED) {
+       // Find if this user was referred by someone and if the referral is still pending
+       const referral = await this.referralRepository.findOne({ 
+          where: { referredUser: { id: order.user.id }, status: 'pending' },
+          relations: ['referrer']
+       });
+
+       if (referral) {
+         // Reward Calculation: 150 Taka fixed reward per successful referral
+         const commission = 150; 
+         
+         referral.status = 'successful';
+         referral.commissionEarned = commission;
+         await this.referralRepository.save(referral);
+
+         // Add money to referrer's wallet
+         const referrer = await this.userRepository.findOne({ where: { id: referral.referrer.id } });
+         if (referrer) {
+            referrer.walletBalance = Number(referrer.walletBalance) + commission;
+            await this.userRepository.save(referrer);
+            console.log(`Commission of ${commission} added to ${referrer.fullName}`);
+         }
+       }
+    }
+
+    order.status = status;
+    return this.orderRepository.save(order);
   }
 
   async findAllAdmin(queryDto?: FindOrdersQueryDto): Promise<Order[]> {
@@ -113,15 +191,6 @@ export class OrdersService {
     if (!order)
       throw new NotFoundException(`Order with ID "${id}" not found.`);
     return order;
-  }
-
-  async updateStatus(updateOrderStatusDto: UpdateOrderStatusDto): Promise<Order> {
-    const { orderId, status } = updateOrderStatusDto;
-    const order = await this.orderRepository.findOne({ where: { orderId } });
-    if (!order)
-      throw new NotFoundException(`Order with ID "${orderId}" not found.`);
-    order.status = status;
-    return this.orderRepository.save(order);
   }
 
   async findAllForUser(user: User, searchTerm?: string): Promise<Order[]> {

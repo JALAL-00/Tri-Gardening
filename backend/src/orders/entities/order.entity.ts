@@ -40,8 +40,16 @@ export class Order {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   deliveryCharge: number;
   
+  // The Total Cost of products + delivery
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   totalAmount: number;
+
+  // --- New Wallet Fields ---
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  walletDiscount: number; // How much was paid using wallet
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  payableAmount: number; // The remaining amount to be paid (COD/Online)
   
   @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PROCESSING })
   status: OrderStatus;

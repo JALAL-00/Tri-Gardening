@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import {
-  IsArray, IsNotEmpty, IsNumber, IsString, IsUUID, ValidateNested, Min, IsPhoneNumber
+  IsArray, IsNotEmpty, IsNumber, IsString, IsUUID, ValidateNested, Min, IsPhoneNumber, IsBoolean, IsOptional
 } from 'class-validator';
 
 class OrderItemDto {
@@ -43,4 +43,8 @@ export class CreateOrderDto {
   @IsNumber()
   @Min(0)
   deliveryCharge: number;
+
+  @IsBoolean()
+  @IsOptional()
+  useWallet?: boolean;
 }

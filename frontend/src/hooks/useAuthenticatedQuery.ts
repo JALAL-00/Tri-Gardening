@@ -4,7 +4,6 @@ import { useQuery, type UseQueryOptions, type QueryKey } from '@tanstack/react-q
 import { useAuthStore } from '@/store/authStore';
 import { useEffect, useState } from 'react';
 
-// --- THIS IS THE DEFINITIVE, CORRECTLY TYPED HOOK ---
 export function useAuthenticatedQuery<
   TQueryFnData = unknown,
   TError = unknown,
@@ -20,8 +19,6 @@ export function useAuthenticatedQuery<
     setIsClient(true);
   }, []);
 
-  // The query is only enabled once the component has mounted on the client
-  // AND the user is confirmed to be authenticated.
   const enabled = isClient && isAuthenticated;
 
   return useQuery<TQueryFnData, TError, TData, TQueryKey>({ ...options, enabled });

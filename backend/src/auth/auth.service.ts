@@ -16,6 +16,7 @@ import { EmailService } from 'src/common/email.service';
 
 // Entities & DTOs
 import { User } from 'src/users/entities/user.entity';
+import { Referral } from 'src/users/entities/referral.entity'; // Make sure this entity exists
 import { RegisterUserDto } from './dto/register-user.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -29,6 +30,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Referral)
+    private readonly referralRepository: Repository<Referral>,
     private readonly emailService: EmailService,
   ) {}
 
@@ -39,7 +42,7 @@ export class AuthService {
 
   // --- METHOD 1: REGISTER ---
   async register(registerUserDto: RegisterUserDto): Promise<{ accessToken: string }> {
-    const { fullName, phone, email, password, address } = registerUserDto;
+    const { fullName, phone, email, password, address, referralCode } = registerUserDto;
 
     const existingUser = await this.usersService.findOneByPhone(phone);
     if (existingUser) {
@@ -67,6 +70,23 @@ export class AuthService {
       console.error(error);
       throw new InternalServerErrorException('An unexpected error occurred.');
     }
+
+    // --- REFERRAL LOGIC START ---
+    if (referralCode) {
+      const referrer = await this.userRepository.findOne({ where: { referralCode } });
+      if (referrer) {
+        // Create a pending referral record
+        const referral = this.referralRepository.create({
+          referrer: referrer,
+          referredUser: newUser,
+          status: 'pending',
+          commissionEarned: 0,
+        });
+        await this.referralRepository.save(referral);
+        console.log(`Referral tracked: ${referrer.fullName} invited ${newUser.fullName}`);
+      }
+    }
+    // --- REFERRAL LOGIC END ---
 
     const payload = { id: newUser.id, phone: newUser.phone, role: newUser.role };
     const accessToken = this.jwtService.sign(payload);
