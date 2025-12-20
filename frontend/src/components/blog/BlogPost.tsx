@@ -23,7 +23,6 @@ export default function BlogPost({ blog }: { blog: any }) {
             <h1 className="text-4xl font-bold text-green-900 mb-4">{blog.title}</h1>
             <Image src={imageUrl} alt={blog.title} width={1000} height={500} className="w-full rounded-lg object-cover mb-8" />
             
-            {/* The `prose` class from @tailwindcss/typography will style this content */}
             <div
                 className="prose prose-lg max-w-none prose-h2:text-green-900 prose-p:text-gray-700 prose-a:text-green-600"
                 dangerouslySetInnerHTML={{ __html: blog.content }}

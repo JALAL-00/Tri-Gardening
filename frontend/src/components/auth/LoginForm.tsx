@@ -21,7 +21,7 @@ const loginUser = async (data: LoginData) => {
   return response.data;
 };
 
-// Accept an optional title prop
+
 export default function LoginForm({ title = "Login to your Account" }: { title?: string }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -34,8 +34,6 @@ export default function LoginForm({ title = "Login to your Account" }: { title?:
     mutationFn: loginUser,
     onSuccess: (data) => {
       setToken(data.accessToken);
-      // Instead of a hardcoded redirect, just reload the page.
-      // The parent component (e.g., the modal) can then decide what to do.
       window.location.reload(); 
     },
     onError: (error) => {
@@ -52,7 +50,7 @@ export default function LoginForm({ title = "Login to your Account" }: { title?:
     <Card className="w-full max-w-md bg-green-950/40 backdrop-blur-xl border border-green-500/30 text-primary-foreground shadow-2xl">
       <CardHeader className="text-center space-y-2">
         <CardTitle className="text-3xl font-bold text-white">
-          {title} {/* Use the title prop here */}
+          {title} 
         </CardTitle>
         <CardDescription className="text-green-200/90">
           To see update on your orders

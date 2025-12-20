@@ -124,6 +124,14 @@ export default function ProfileForms() {
         return <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-green-600" /></div>;
     }
 
+    function setThana(value: string): void {
+        throw new Error("Function not implemented.");
+    }
+
+    function setDistrict(value: string): void {
+        throw new Error("Function not implemented.");
+    }
+
     return (
         <div className="space-y-8 text-gray-800">
             {/* --- Profile Information Form --- */}
@@ -168,9 +176,101 @@ export default function ProfileForms() {
                                 <div className="space-y-2"><Label htmlFor="fullName" className="text-green-600">Full Name</Label><Input id="fullName" {...registerProfile('fullName')} className="bg-gray-50 text-black" /></div>
                                 <div className="space-y-2"><Label htmlFor="phone" className="text-green-600">Phone Number *</Label><Input id="phone" value={profile?.phone} readOnly disabled className="bg-gray-200 text-black" /></div>
 
-                                <div className="space-y-2"><Label htmlFor="thana" className="text-green-600">Thana <span className="text-gray-500">(Optional)</span></Label><Select><SelectTrigger className="bg-gray-50 text-black"><SelectValue placeholder="Dhaka" /></SelectTrigger></Select></div>
+                                <div className="space-y-2">
+                                <Label htmlFor="thana" className="text-green-600">
+                                    Thana <span className="text-gray-500">(Optional)</span>
+                                </Label>
 
-                                <div className="space-y-2"><Label htmlFor="district" className="text-green-600">District *</Label><Select><SelectTrigger className="bg-gray-50 text-black"><SelectValue placeholder="Dhaka" /></SelectTrigger></Select></div>
+                                <Select onValueChange={setThana}>
+                                    <SelectTrigger className="bg-gray-50 text-black">
+                                    <SelectValue placeholder="Select Thana" />
+                                    </SelectTrigger>
+
+                                    <SelectContent className="bg-white text-black">
+                                    <SelectItem value="Adabor">Adabor</SelectItem>
+                                    <SelectItem value="Badda">Badda</SelectItem>
+                                    <SelectItem value="Bangshal">Bangshal</SelectItem>
+                                    <SelectItem value="Bimanbandar">Bimanbandar</SelectItem>
+                                    <SelectItem value="Cantonment">Cantonment</SelectItem>
+                                    <SelectItem value="Chak Bazar">Chak Bazar</SelectItem>
+                                    <SelectItem value="Dakkhin Khan">Dakkhin Khan</SelectItem>
+                                    <SelectItem value="Darus Salam">Darus Salam</SelectItem>
+                                    <SelectItem value="Demra">Demra</SelectItem>
+                                    <SelectItem value="Dhanmondi">Dhanmondi</SelectItem>
+                                    <SelectItem value="Gendaria">Gendaria</SelectItem>
+                                    <SelectItem value="Gulshan">Gulshan</SelectItem>
+                                    <SelectItem value="Hazaribagh">Hazaribagh</SelectItem>
+                                    <SelectItem value="Jatrabari">Jatrabari</SelectItem>
+                                    <SelectItem value="Kadamtali">Kadamtali</SelectItem>
+                                    <SelectItem value="Kafrul">Kafrul</SelectItem>
+                                    <SelectItem value="Kalabagan">Kalabagan</SelectItem>
+                                    <SelectItem value="Kamrangirchar">Kamrangirchar</SelectItem>
+                                    <SelectItem value="Khilgaon">Khilgaon</SelectItem>
+                                    <SelectItem value="Khilkhet">Khilkhet</SelectItem>
+                                    <SelectItem value="Kotwali">Kotwali</SelectItem>
+                                    <SelectItem value="Lalbagh">Lalbagh</SelectItem>
+                                    <SelectItem value="Mirpur">Mirpur</SelectItem>
+                                    <SelectItem value="Mohammadpur">Mohammadpur</SelectItem>
+                                    <SelectItem value="Motijheel">Motijheel</SelectItem>
+                                    <SelectItem value="Mugda">Mugda</SelectItem>
+                                    <SelectItem value="New Market">New Market</SelectItem>
+                                    <SelectItem value="Pallabi">Pallabi</SelectItem>
+                                    <SelectItem value="Paltan">Paltan</SelectItem>
+                                    <SelectItem value="Ramna">Ramna</SelectItem>
+                                    <SelectItem value="Rampura">Rampura</SelectItem>
+                                    <SelectItem value="Sabujbagh">Sabujbagh</SelectItem>
+                                    <SelectItem value="Shah Ali">Shah Ali</SelectItem>
+                                    <SelectItem value="Shahbagh">Shahbagh</SelectItem>
+                                    <SelectItem value="Sher-e-Bangla Nagar">Sher-e-Bangla Nagar</SelectItem>
+                                    <SelectItem value="Shyampur">Shyampur</SelectItem>
+                                    <SelectItem value="Sutrapur">Sutrapur</SelectItem>
+                                    <SelectItem value="Tejgaon">Tejgaon</SelectItem>
+                                    <SelectItem value="Tejgaon Industrial Area">Tejgaon Industrial Area</SelectItem>
+                                    <SelectItem value="Turag">Turag</SelectItem>
+                                    <SelectItem value="Uttar Khan">Uttar Khan</SelectItem>
+                                    <SelectItem value="Uttara East">Uttara East</SelectItem>
+                                    <SelectItem value="Uttara West">Uttara West</SelectItem>
+                                    <SelectItem value="Vatara">Vatara</SelectItem>
+                                    <SelectItem value="Wari">Wari</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                </div>
+
+
+                                <div className="space-y-2">
+                                <Label htmlFor="district" className="text-green-600">
+                                    District <span className="text-red-500">*</span>
+                                </Label>
+
+                                <Select onValueChange={setDistrict} required>
+                                    <SelectTrigger className="bg-gray-50 text-black">
+                                    <SelectValue placeholder="Select District" />
+                                    </SelectTrigger>
+
+                                    <SelectContent className="bg-white text-black">
+                                    <SelectItem value="Dhaka">Dhaka</SelectItem>
+                                    <SelectItem value="Chattogram">Chattogram</SelectItem>
+                                    <SelectItem value="Gazipur">Gazipur</SelectItem>
+                                    <SelectItem value="Narayanganj">Narayanganj</SelectItem>
+                                    <SelectItem value="Cumilla">Cumilla</SelectItem>
+                                    <SelectItem value="Narsingdi">Narsingdi</SelectItem>
+                                    <SelectItem value="Mymensingh">Mymensingh</SelectItem>
+                                    <SelectItem value="Sylhet">Sylhet</SelectItem>
+                                    <SelectItem value="Rajshahi">Rajshahi</SelectItem>
+                                    <SelectItem value="Bogura">Bogura</SelectItem>
+                                    <SelectItem value="Rangpur">Rangpur</SelectItem>
+                                    <SelectItem value="Dinajpur">Dinajpur</SelectItem>
+                                    <SelectItem value="Khulna">Khulna</SelectItem>
+                                    <SelectItem value="Jessore">Jessore</SelectItem>
+                                    <SelectItem value="Barishal">Barishal</SelectItem>
+                                    <SelectItem value="Noakhali">Noakhali</SelectItem>
+                                    <SelectItem value="Feni">Feni</SelectItem>
+                                    <SelectItem value="Cox's Bazar">Cox's Bazar</SelectItem>
+                                    <SelectItem value="Brahmanbaria">Brahmanbaria</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                </div>
+
 
                                 <div className="sm:col-span-2 space-y-2"><Label htmlFor="email" className="text-green-600">Email Address <span className="text-gray-500 font-medium">(Optional)</span></Label><Input id="email" type="email" {...registerProfile('email')} className="bg-gray-50 text-black" /></div>
                                 <div className="sm:col-span-2 space-y-2"><Label htmlFor="secondaryPhone" className="text-green-600">Secondary Number <span className="text-gray-500 font-medium">(Optional)</span></Label><Input id="secondaryPhone" placeholder="+8801234567890" className="bg-gray-50 text-black" /></div>

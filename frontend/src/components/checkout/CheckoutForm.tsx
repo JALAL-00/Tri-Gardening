@@ -8,11 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox"; // Added Checkbox
 import { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Wallet } from "lucide-react"; // Added Wallet icon
 import CheckoutStepper from "./CheckoutStepper";
 
 // API functions
@@ -35,6 +36,7 @@ export default function CheckoutForm() {
     
     // State flag to control redirect logic
     const [isOrderSuccessful, setIsOrderSuccessful] = useState(false);
+    const [useWallet, setUseWallet] = useState(false); // State for Wallet Usage
     
     const { data: userProfile } = useQuery({ queryKey: ['profile'], queryFn: getProfile });
 
@@ -68,9 +70,16 @@ export default function CheckoutForm() {
         }
     }, [userProfile]);
 
+    // --- Calculations ---
     const subtotal = items.reduce((acc, item) => acc + parseFloat(item.price as any) * item.quantity, 0);
     const deliveryCharge = 100;
-    const totalAmount = subtotal + deliveryCharge;
+    const grossTotal = subtotal + deliveryCharge;
+
+    const walletBalance = parseFloat(userProfile?.walletBalance || '0');
+    
+    // Calculate Discount based on toggle
+    const walletDiscount = useWallet ? Math.min(grossTotal, walletBalance) : 0;
+    const payableAmount = grossTotal - walletDiscount;
     
     const mutation = useMutation({
         mutationFn: createOrder,
@@ -104,6 +113,7 @@ export default function CheckoutForm() {
             items: items.map(item => ({ variantId: item.variantId, quantity: item.quantity })),
             shippingAddress,
             deliveryCharge,
+            useWallet, // Send flag to backend
         };
         
         mutation.mutate(orderData);
@@ -114,7 +124,7 @@ export default function CheckoutForm() {
         return `http://localhost:5005${path}`;
     };
 
-    // New, robust redirect logic
+    // Redirect logic
     useEffect(() => {
         if (typeof window !== 'undefined' && items.length === 0 && !isOrderSuccessful) {
             router.push('/products');
@@ -204,16 +214,49 @@ export default function CheckoutForm() {
                                    </div>
                                ))}
                             </div>
+                            
                             <Separator />
+                            
+                            {/* Wallet Usage Section */}
+                            {walletBalance > 0 && (
+                                <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox 
+                                            id="useWallet" 
+                                            checked={useWallet}
+                                            onCheckedChange={(checked) => setUseWallet(checked as boolean)}
+                                            className="border-green-600 data-[state=checked]:bg-green-600 data-[state=checked]:text-white"
+                                        />
+                                        <Label 
+                                            htmlFor="useWallet" 
+                                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2 text-green-900"
+                                        >
+                                            <Wallet className="h-4 w-4" />
+                                            Use Wallet Balance (৳{walletBalance.toFixed(2)})
+                                        </Label>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="space-y-2 text-sm text-gray-700">
                                 <div className="flex justify-between"><span>Subtotal</span><span className="font-medium">৳{subtotal.toFixed(2)}</span></div>
                                 <div className="flex justify-between"><span>Delivery Charge</span><span className="font-medium">৳{deliveryCharge.toFixed(2)}</span></div>
+                                
+                                {useWallet && walletDiscount > 0 && (
+                                    <div className="flex justify-between text-green-700">
+                                        <span>Wallet Discount</span>
+                                        <span className="font-medium">- ৳{walletDiscount.toFixed(2)}</span>
+                                    </div>
+                                )}
                             </div>
+                            
                             <Separator />
+                            
                             <div className="flex justify-between font-bold text-lg text-green-900">
-                                <span>Total</span>
-                                <span>৳{totalAmount.toFixed(2)}</span>
+                                <span>Payable Total</span>
+                                <span>৳{payableAmount.toFixed(2)}</span>
                             </div>
+                            
                             <Button type="submit" size="lg" className="w-full bg-green-600 hover:bg-green-700 mt-4 text-base font-bold" disabled={mutation.isPending || (!selectedAddress && !showNewAddressForm)}>
                                 {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {mutation.isPending ? 'Placing Order...' : 'Proceed to Checkout'}

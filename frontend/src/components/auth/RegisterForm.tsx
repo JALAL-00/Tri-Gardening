@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Facebook, Chrome, Loader2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea"; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -21,6 +21,7 @@ interface RegisterData {
   phone: string;
   email?: string;
   password: string;
+  referralCode?: string; // Added referral code
   address: {
     thana: string;
     district: string;
@@ -41,6 +42,7 @@ export default function RegisterForm() {
   const [fullAddress, setFullAddress] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [referralCode, setReferralCode] = useState(""); // State for Referral Code
   const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
@@ -50,6 +52,7 @@ export default function RegisterForm() {
     mutationFn: registerUser,
     onSuccess: (data) => {
       setToken(data.accessToken);
+      // Redirect to profile or home after successful registration
       router.push('/profile');
     },
     onError: (error: any) => {
@@ -68,6 +71,7 @@ export default function RegisterForm() {
       phone,
       email,
       password,
+      referralCode: referralCode.trim() || undefined, // Send only if not empty
       address: {
         thana,
         district,
@@ -126,9 +130,51 @@ export default function RegisterForm() {
                   <SelectValue placeholder="Select Thana" />
                 </SelectTrigger>
                 <SelectContent className="bg-green-900 text-white border-green-700">
-                  <SelectItem value="Mirpur">Mirpur</SelectItem>
+                  <SelectItem value="Adabor">Adabor</SelectItem>
+                  <SelectItem value="Badda">Badda</SelectItem>
+                  <SelectItem value="Bangshal">Bangshal</SelectItem>
+                  <SelectItem value="Bimanbandar">Bimanbandar</SelectItem>
+                  <SelectItem value="Cantonment">Cantonment</SelectItem>
+                  <SelectItem value="Chak Bazar">Chak Bazar</SelectItem>
+                  <SelectItem value="Dakkhin Khan">Dakkhin Khan</SelectItem>
+                  <SelectItem value="Darus Salam">Darus Salam</SelectItem>
+                  <SelectItem value="Demra">Demra</SelectItem>
+                  <SelectItem value="Dhanmondi">Dhanmondi</SelectItem>
+                  <SelectItem value="Gendaria">Gendaria</SelectItem>
                   <SelectItem value="Gulshan">Gulshan</SelectItem>
-                  <SelectItem value="Savar">Savar</SelectItem>
+                  <SelectItem value="Hazaribagh">Hazaribagh</SelectItem>
+                  <SelectItem value="Jatrabari">Jatrabari</SelectItem>
+                  <SelectItem value="Kadamtali">Kadamtali</SelectItem>
+                  <SelectItem value="Kafrul">Kafrul</SelectItem>
+                  <SelectItem value="Kalabagan">Kalabagan</SelectItem>
+                  <SelectItem value="Kamrangirchar">Kamrangirchar</SelectItem>
+                  <SelectItem value="Khilgaon">Khilgaon</SelectItem>
+                  <SelectItem value="Khilkhet">Khilkhet</SelectItem>
+                  <SelectItem value="Kotwali">Kotwali</SelectItem>
+                  <SelectItem value="Lalbagh">Lalbagh</SelectItem>
+                  <SelectItem value="Mirpur">Mirpur</SelectItem>
+                  <SelectItem value="Mohammadpur">Mohammadpur</SelectItem>
+                  <SelectItem value="Motijheel">Motijheel</SelectItem>
+                  <SelectItem value="Mugda">Mugda</SelectItem>
+                  <SelectItem value="New Market">New Market</SelectItem>
+                  <SelectItem value="Pallabi">Pallabi</SelectItem>
+                  <SelectItem value="Paltan">Paltan</SelectItem>
+                  <SelectItem value="Ramna">Ramna</SelectItem>
+                  <SelectItem value="Rampura">Rampura</SelectItem>
+                  <SelectItem value="Sabujbagh">Sabujbagh</SelectItem>
+                  <SelectItem value="Shah Ali">Shah Ali</SelectItem>
+                  <SelectItem value="Shahbagh">Shahbagh</SelectItem>
+                  <SelectItem value="Sher-e-Bangla Nagar">Sher-e-Bangla Nagar</SelectItem>
+                  <SelectItem value="Shyampur">Shyampur</SelectItem>
+                  <SelectItem value="Sutrapur">Sutrapur</SelectItem>
+                  <SelectItem value="Tejgaon">Tejgaon</SelectItem>
+                  <SelectItem value="Tejgaon Industrial Area">Tejgaon Industrial Area</SelectItem>
+                  <SelectItem value="Turag">Turag</SelectItem>
+                  <SelectItem value="Uttar Khan">Uttar Khan</SelectItem>
+                  <SelectItem value="Uttara East">Uttara East</SelectItem>
+                  <SelectItem value="Uttara West">Uttara West</SelectItem>
+                  <SelectItem value="Vatara">Vatara</SelectItem>
+                  <SelectItem value="Wari">Wari</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -142,8 +188,25 @@ export default function RegisterForm() {
                 </SelectTrigger>
                 <SelectContent className="bg-green-900 text-white border-green-700">
                   <SelectItem value="Dhaka">Dhaka</SelectItem>
-                  <SelectItem value="Chittagong">Chittagong</SelectItem>
+                  <SelectItem value="Chattogram">Chattogram</SelectItem>
+                  <SelectItem value="Gazipur">Gazipur</SelectItem>
+                  <SelectItem value="Narayanganj">Narayanganj</SelectItem>
+                  <SelectItem value="Cumilla">Cumilla</SelectItem>
+                  <SelectItem value="Narsingdi">Narsingdi</SelectItem>
+                  <SelectItem value="Mymensingh">Mymensingh</SelectItem>
+                  <SelectItem value="Sylhet">Sylhet</SelectItem>
+                  <SelectItem value="Rajshahi">Rajshahi</SelectItem>
+                  <SelectItem value="Bogura">Bogura</SelectItem>
+                  <SelectItem value="Rangpur">Rangpur</SelectItem>
+                  <SelectItem value="Dinajpur">Dinajpur</SelectItem>
                   <SelectItem value="Khulna">Khulna</SelectItem>
+                  <SelectItem value="Jessore">Jessore</SelectItem>
+                  <SelectItem value="Barishal">Barishal</SelectItem>
+                  <SelectItem value="Patuakhali">Patuakhali</SelectItem>
+                  <SelectItem value="Noakhali">Noakhali</SelectItem>
+                  <SelectItem value="Feni">Feni</SelectItem>
+                  <SelectItem value="Cox's Bazar">Cox's Bazar</SelectItem>
+                  <SelectItem value="Brahmanbaria">Brahmanbaria</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -163,7 +226,7 @@ export default function RegisterForm() {
             </div>
 
             {/* EMAIL */}
-            <div className="space-y-2 text-left col-span-2">
+            <div className="space-y-2 text-left">
               <Label htmlFor="email" className="text-green-100">
                 Email Address <span className="text-green-300/70">(Optional)</span>
               </Label>
@@ -174,6 +237,21 @@ export default function RegisterForm() {
                 type="email"
                 placeholder="Enter your email"
                 className="bg-white/10 border-green-400/50 text-white pr-12"
+              />
+            </div>
+
+            {/* REFERRAL CODE (NEW) */}
+            <div className="space-y-2 text-left">
+              <Label htmlFor="referralCode" className="text-green-100">
+                Referral Code <span className="text-green-300/70">(Optional)</span>
+              </Label>
+              <Input
+                id="referralCode"
+                value={referralCode}
+                onChange={(e) => setReferralCode(e.target.value)}
+                type="text"
+                placeholder="Ex: GARDEN-A1B2"
+                className="bg-white/10 border-green-400/50 text-white uppercase placeholder:normal-case"
               />
             </div>
 
