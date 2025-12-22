@@ -13,9 +13,11 @@ import { OrderItem } from './entities/order-item.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { FindOrdersQueryDto } from './dto/find-orders-query.dto';
+import { CreateAdminOrderDto } from './dto/create-admin-order.dto'; 
 
 @Injectable()
 export class OrdersService {
+
   constructor(
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
@@ -40,11 +42,93 @@ export class OrdersService {
     return `TG-${(lastId + 1).toString().padStart(4, '0')}`;
   }
 
-  // --- CREATE ORDER (Wallet Logic Implemented) ---
+  // --- ADMIN: CREATE ORDER ---
+  async createByAdmin(dto: CreateAdminOrderDto): Promise<Order> {
+    const { userId, items } = dto;
+
+    const user = await this.userRepository.findOne({ 
+      where: { id: userId },
+      relations: ['addresses'] 
+    });
+    if (!user) throw new NotFoundException('User not found');
+
+    const address = user.addresses.find(a => a.isDefault) || user.addresses[0];
+    if (!address) {
+      throw new BadRequestException('User has no saved addresses. Cannot create order.');
+    }
+
+    const shippingAddress = {
+      fullName: user.fullName,
+      phone: user.phone,
+      thana: address.thana,
+      district: address.district,
+      fullAddress: address.fullAddress,
+    };
+
+    const variantIds = items.map((item) => item.variantId);
+    
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const variants = await queryRunner.manager.findBy(ProductVariant, {
+        id: In(variantIds),
+      });
+
+      let subTotal = 0;
+      const orderItems: OrderItem[] = [];
+
+      for (const itemDto of items) {
+        const variant = variants.find((v) => v.id === itemDto.variantId);
+        if (!variant) throw new NotFoundException(`Product variant ${itemDto.variantId} not found.`);
+        if (variant.stock < itemDto.quantity) throw new BadRequestException(`Not enough stock for ${variant.title}`);
+
+        variant.stock -= itemDto.quantity;
+        await queryRunner.manager.save(variant);
+
+        subTotal += Number(variant.price) * itemDto.quantity;
+
+        const orderItem = new OrderItem();
+        orderItem.variant = variant;
+        orderItem.quantity = itemDto.quantity;
+        orderItem.titleAtPurchase = variant.title;
+        orderItem.priceAtPurchase = variant.price;
+        orderItems.push(orderItem);
+      }
+
+      const deliveryCharge = 100; 
+      const totalAmount = subTotal + deliveryCharge;
+
+      const newOrder = this.orderRepository.create({
+        orderId: await this.generateOrderId(),
+        user,
+        shippingAddress,
+        items: orderItems,
+        subTotal,
+        deliveryCharge,
+        totalAmount,
+        walletDiscount: 0, 
+        payableAmount: totalAmount,
+        status: OrderStatus.PROCESSING,
+      });
+
+      const savedOrder = await queryRunner.manager.save(newOrder);
+      await queryRunner.commitTransaction();
+      return savedOrder;
+
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  // --- CUSTOMER: CREATE ORDER (Wallet Logic Implemented) ---
   async create(createOrderDto: CreateOrderDto, user: User): Promise<Order> {
     const { items, shippingAddress, deliveryCharge, useWallet } = createOrderDto;
 
-    // Fetch user fresh to get accurate wallet balance
     const currentUser = await this.userRepository.findOne({ where: { id: user.id } });
     if (!currentUser) throw new NotFoundException('User not found');
 
@@ -89,7 +173,6 @@ export class OrdersService {
 
       // Wallet Deduction Logic
       if (useWallet && currentUser.walletBalance > 0) {
-        // Convert string/decimal to number for calculation
         const currentBalance = Number(currentUser.walletBalance);
         
         if (currentBalance >= totalAmount) {
@@ -100,7 +183,7 @@ export class OrdersService {
            currentUser.walletBalance = 0;
         }
         payableAmount = totalAmount - walletDiscount;
-        await queryRunner.manager.save(currentUser); // Update user balance in DB
+        await queryRunner.manager.save(currentUser); 
       }
 
       const newOrder = this.orderRepository.create({
@@ -136,23 +219,19 @@ export class OrdersService {
     if (!order)
       throw new NotFoundException(`Order with ID "${orderId}" not found.`);
 
-    // Check if status is changing TO Delivered
     if (order.status !== OrderStatus.DELIVERED && status === OrderStatus.DELIVERED) {
-       // Find if this user was referred by someone and if the referral is still pending
        const referral = await this.referralRepository.findOne({ 
           where: { referredUser: { id: order.user.id }, status: 'pending' },
           relations: ['referrer']
        });
 
        if (referral) {
-         // Reward Calculation: 150 Taka fixed reward per successful referral
          const commission = 150; 
          
          referral.status = 'successful';
          referral.commissionEarned = commission;
          await this.referralRepository.save(referral);
 
-         // Add money to referrer's wallet
          const referrer = await this.userRepository.findOne({ where: { id: referral.referrer.id } });
          if (referrer) {
             referrer.walletBalance = Number(referrer.walletBalance) + commission;
@@ -223,4 +302,13 @@ export class OrdersService {
       throw new NotFoundException(`Order with ID "${id}" not found.`);
     return order;
   }
+
+  async remove(id: string): Promise<void> {
+    const order = await this.orderRepository.findOne({ where: { id } });
+    if (!order) {
+      throw new NotFoundException(`Order with ID "${id}" not found.`);
+    }
+    await this.orderRepository.remove(order);
+  }
+  
 }
