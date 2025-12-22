@@ -1,14 +1,12 @@
 'use client';
 
 import ProductForm from "@/components/admin/products/ProductForm";
+import AdminHeader from "@/components/admin/AdminHeader";
 
 export default function AddProductPage() {
   return (
     <div className="space-y-6">
-        <div>
-            <h1 className="text-3xl font-bold text-gray-900">Add Product</h1>
-            <p className="text-gray-500">Product List &gt; Add Product</p>
-        </div>
+        <AdminHeader title="Add Product" subtitle="Product List > Add Product" />
         <ProductForm />
     </div>
   );

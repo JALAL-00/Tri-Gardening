@@ -5,7 +5,6 @@ import { Product, ProductStatus } from './entities/product.entity';
 import { ProductVariant } from './entities/product-variant.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { DeleteProductDto } from './dto/delete-product.dto';
 import { CategoriesService } from 'src/categories/categories.service';
 import { FindProductsQueryDto } from './dto/find-products-query.dto';
 import { ReviewStatus } from './entities/review.entity';
@@ -56,6 +55,7 @@ export class ProductsService {
 
       if (variants) {
         const variantIdsToKeep = variants.map((v) => v.id).filter(Boolean);
+        // Remove variants that are not in the payload
         const variantsToDelete = product.variants.filter((v) => !variantIdsToKeep.includes(v.id));
         if (variantsToDelete.length) await queryRunner.manager.remove(variantsToDelete);
 
@@ -85,8 +85,9 @@ export class ProductsService {
     }
   }
 
-  async remove(deleteProductDto: DeleteProductDto): Promise<void> {
-    const product = await this.findOne(deleteProductDto.id);
+  // --- UPDATED: Expects ID string directly ---
+  async remove(id: string): Promise<void> {
+    const product = await this.findOne(id); // Helper ensures existence
     await this.productRepository.remove(product);
   }
 
@@ -97,10 +98,10 @@ export class ProductsService {
     const queryBuilder = this.productRepository.createQueryBuilder('product')
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.variants', 'variants')
-      .leftJoin('product.tags', 'tag') // Left join to filter without losing products
+      .leftJoin('product.tags', 'tag') 
       .where('product.status = :status', { status: ProductStatus.PUBLISHED });
 
-    if (categoryId) queryBuilder.andWhere('product.categoryId = :categoryId', { categoryId });
+    if (categoryId) queryBuilder.andWhere('product.category.id = :categoryId', { categoryId }); // Fixed categoryId relation access
     if (search) queryBuilder.andWhere('product.name ILIKE :search', { search: `%${search}%` });
     if (minPrice) queryBuilder.andWhere('variants.price >= :minPrice', { minPrice });
     if (maxPrice) queryBuilder.andWhere('variants.price <= :maxPrice', { maxPrice });
@@ -114,7 +115,7 @@ export class ProductsService {
       .take(limit)
       .getManyAndCount();
 
-    // Ensure tags are loaded even with complex joins
+    // Ensure tags are loaded
     for (const product of products) {
       product.tags = await this.productRepository.createQueryBuilder()
         .relation(Product, "tags")
