@@ -65,4 +65,5 @@ Follow these instructions to get the project up and running on your local machin
 ### **1. Clone the Repository**
 ```bash
 git clone https://github.com/JALAL-00/Tri-Gardening.git
-cd Tri-Gardening/Tri-Gardening-Backend
+cd Backend
+cd frontend
