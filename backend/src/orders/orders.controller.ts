@@ -66,7 +66,6 @@ export class OrdersController {
     return this.ordersService.updateStatus(updateOrderStatusDto);
   }
 
-  // --- ADD THIS DELETE ENDPOINT ---
   @Delete('admin/orders/:id')
   @UseGuards(AdminGuard)
   remove(@Param('id', ParseUUIDPipe) id: string) {
