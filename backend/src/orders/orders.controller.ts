@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe, 
   Post, 
   Put, 
+  Delete, 
   Query, 
   UseGuards 
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { FindOrdersQueryDto } from './dto/find-orders-query.dto';
 import { OrdersService } from './orders.service';
+import { CreateAdminOrderDto } from './dto/create-admin-order.dto';
 
 @Controller()
 export class OrdersController {
@@ -26,6 +28,12 @@ export class OrdersController {
   @UseGuards(CustomerGuard)
   create(@Body() createOrderDto: CreateOrderDto, @GetUser() user: User) {
     return this.ordersService.create(createOrderDto, user);
+  }
+
+  @Post('admin/orders')
+  @UseGuards(AdminGuard)
+  createByAdmin(@Body() createAdminOrderDto: CreateAdminOrderDto) {
+    return this.ordersService.createByAdmin(createAdminOrderDto);
   }
 
   @Get('orders')
@@ -56,5 +64,12 @@ export class OrdersController {
   @UseGuards(AdminGuard)
   updateStatus(@Body() updateOrderStatusDto: UpdateOrderStatusDto) {
     return this.ordersService.updateStatus(updateOrderStatusDto);
+  }
+
+  // --- ADD THIS DELETE ENDPOINT ---
+  @Delete('admin/orders/:id')
+  @UseGuards(AdminGuard)
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.ordersService.remove(id);
   }
 }

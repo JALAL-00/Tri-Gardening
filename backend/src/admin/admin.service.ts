@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, LessThan } from 'typeorm';
+import { Repository, Between } from 'typeorm';
 import { Order } from 'src/orders/entities/order.entity';
 import { ProductVariant } from 'src/products/entities/product-variant.entity';
 import { User } from 'src/users/entities/user.entity';
@@ -30,7 +30,7 @@ export class AdminService {
     // 3. Total Customers
     const totalCustomers = await this.userRepo.count({ where: { role: 'customer' as any } });
 
-    // 4. Products Sold (Sum of order items quantities) - Simplified for performance
+    // 4. Products Sold
     const { productsSold } = await this.orderRepo
       .createQueryBuilder('order')
       .leftJoin('order.items', 'items')
@@ -53,8 +53,27 @@ export class AdminService {
       .addSelect('SUM(order.totalAmount)', 'revenue')
       .where('order.createdAt >= :date', { date: sevenDaysAgo })
       .groupBy("TO_CHAR(order.createdAt, 'Dy')")
-      .orderBy("MIN(order.createdAt)", "ASC")
+      .addGroupBy("DATE(order.createdAt)") 
+      .orderBy("DATE(order.createdAt)", "ASC")
       .getRawMany();
+
+    // 7. Recent Orders (Real Data)
+    const recentOrders = await this.orderRepo.find({
+      take: 5,
+      order: { createdAt: 'DESC' },
+      relations: ['user'],
+    });
+
+    // 8. Top Selling Products (Real Data)
+    const topSelling = await this.orderRepo.manager.query(`
+      SELECT p.name, SUM(oi.quantity) as sold, pv.images
+      FROM order_items oi
+      JOIN product_variants pv ON oi."variantId" = pv.id
+      JOIN products p ON pv."productId" = p.id
+      GROUP BY p.id, p.name, pv.images
+      ORDER BY sold DESC
+      LIMIT 5
+    `);
 
     return {
       totalRevenue: parseFloat(totalRevenue) || 0,
@@ -65,10 +84,21 @@ export class AdminService {
          id: v.id, 
          name: v.product.name, 
          variant: v.title, 
-         stock: v.stock,
+         stock: v.stock, 
          limit: v.stockAlertLimit 
       })),
       salesGraph: salesData,
+      recentOrders: recentOrders.map(o => ({
+        id: o.orderId,
+        customer: o.user.fullName, // Or shippingAddress.fullName
+        amount: o.totalAmount,
+        status: o.status
+      })),
+      topSelling: topSelling.map((p: any) => ({
+        name: p.name,
+        sold: p.sold,
+        image: p.images ? p.images.split(',')[0] : null 
+      }))
     };
   }
 
