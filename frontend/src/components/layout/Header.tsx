@@ -13,12 +13,10 @@ import { useCartStore } from '@/store/cartStore';
 export default function Header() {
   const { isAuthenticated } = useAuthStore();
   
-  // This is the correct, reactive way to get the total item count
   const totalItems = useCartStore(state => 
     state.items.reduce((total, item) => total + item.quantity, 0)
   );
 
-  // isClient state is still needed to prevent hydration mismatch for auth and cart
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
@@ -27,8 +25,9 @@ export default function Header() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/products', label: 'Products' },
-    { href: '/blog', label: 'Blog' },
     { href: '/plant-clinic', label: 'Plant Clinic' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/about', label: 'about' },
   ];
 
   return (

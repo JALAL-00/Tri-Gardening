@@ -21,7 +21,7 @@ const loginUser = async (data: LoginData) => {
   return response.data;
 };
 
-
+// Accept an optional title prop
 export default function LoginForm({ title = "Login to your Account" }: { title?: string }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -33,10 +33,30 @@ export default function LoginForm({ title = "Login to your Account" }: { title?:
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
+      // 1. Save Token to Store (LocalStorage)
       setToken(data.accessToken);
-      window.location.reload(); 
+
+      // 2. Decode Token to get User Role
+      // The JWT format is: header.payload.signature
+      // We need to decode the payload (index 1)
+      try {
+        const payloadBase64 = data.accessToken.split('.')[1];
+        const decodedJson = JSON.parse(atob(payloadBase64));
+        const role = decodedJson.role;
+
+        // 3. Redirect based on Role
+        if (role === 'admin') {
+          router.push('/admin/dashboard');
+        } else {
+          router.push('/dashboard'); // Redirect customers to their dashboard
+        }
+      } catch (error) {
+        console.error("Failed to parse token role", error);
+        // Fallback redirect if something goes wrong
+        router.push('/dashboard');
+      }
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Login failed:", error);
     },
   });
@@ -97,7 +117,7 @@ export default function LoginForm({ title = "Login to your Account" }: { title?:
 
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center space-x-2">
-              <Checkbox id="remember" className="border-green-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500" />
+              <Checkbox id="remember" className="border-green-400 data-[state=checked]:bg-green-50 data-[state=checked]:border-green-50" />
               <Label htmlFor="remember" className="font-medium text-green-200/90">
                 Remember Me
               </Label>
@@ -108,7 +128,9 @@ export default function LoginForm({ title = "Login to your Account" }: { title?:
           </div>
 
           {mutation.isError && (
-             <p className="text-sm text-red-400 text-center">Login failed. Please check your credentials.</p>
+             <p className="text-sm text-red-400 text-center">
+               Login failed. Please check your credentials.
+             </p>
           )}
 
           <Button
