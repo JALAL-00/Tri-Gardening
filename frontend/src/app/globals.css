@@ -56,7 +56,5 @@
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-green-950 text-green-100;
-  }
+  
 }
