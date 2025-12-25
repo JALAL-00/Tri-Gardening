@@ -6,8 +6,6 @@ Beyond standard e-commerce, it integrates **Google Gemini AI** to power a "Plant
 
 ---
 
----
-
 ## Project Screenshots
 
 
