@@ -4,30 +4,12 @@
 
 Beyond standard e-commerce, it integrates **Google Gemini AI** to power a "Plant Clinic," offering real-time diagnosis for plant diseases.
 
-## Live Demo & Access
-
-Access the application locally (or via deployed links if available):
-
-*   **Public Storefront:** [http://localhost:3000](http://localhost:3000)
-*   **Admin Dashboard:** [http://localhost:3000/admin/dashboard](http://localhost:3000/admin/dashboard)
+---
 
 ---
 
-## Login Credentials
+## Project Screenshots
 
-Use these credentials to test the different role-based workflows:
-
-### **1. Admin Access**
-*   **Login URL:** [http://localhost:3000/login](http://localhost:3000/login)
-*   **Phone:** `+8801875627698`
-*   **Password:** `admin123` (or your local config password)
-
-### **2. Customer Access**
-*   **Login URL:** [http://localhost:3000/login](http://localhost:3000/login)
-*   **Phone:** `+8801234567890`
-*   **Password:** `password123`
-
----
 
 ## Tech Stack Summary
 
@@ -117,25 +99,6 @@ The project utilizes a modern Monorepo-style structure separating the Backend AP
     ```
     *(Access the UI at `http://localhost:3000`)*
 
----
-
-## Project Screenshots
-
-### 1. Admin Dashboard & Analytics
-Real-time insights into business performance with interactive charts.
-![Dashboard](https://via.placeholder.com/800x450.png?text=Admin+Dashboard+Screenshot)
-
-### 2. Product Management (Dynamic Variants)
-Sophisticated form handling for products with multiple sizes, colors, and stock limits.
-![Products](https://via.placeholder.com/800x450.png?text=Product+Management+Screenshot)
-
-### 3. Customer Plant Clinic (AI Powered)
-Users chat with "Gardy" (AI) to diagnose plant health issues via image recognition.
-![Plant Clinic](https://via.placeholder.com/800x450.png?text=Plant+Clinic+AI+Screenshot)
-
-### 4. Checkout with Wallet Support
-Seamless checkout flow integrating shipping addresses and wallet credit usage.
-![Checkout](https://via.placeholder.com/800x450.png?text=Checkout+Flow+Screenshot)
 
 ---
 
