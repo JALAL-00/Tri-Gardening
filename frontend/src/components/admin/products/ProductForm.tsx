@@ -152,25 +152,25 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
       <div className="lg:col-span-2 space-y-8">
         
         {/* General Info Card - Dark Theme */}
-        <Card className="bg-[#0F172A] border-none shadow-xl rounded-xl overflow-hidden">
+        <Card className="bg-white border-none shadow-xl rounded-xl overflow-hidden">
             <CardHeader className="border-b border-gray-800 pb-4">
-                <CardTitle className="text-white text-lg font-semibold">General Information</CardTitle>
+                <CardTitle className="text-gray-700 text-lg font-semibold">General Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5 pt-6">
                 <div className="space-y-2">
-                    <Label className="text-gray-300 font-medium">Product Name</Label>
+                    <Label className="text-gray-600 font-medium">Product Name</Label>
                     <Input 
                         {...register("name", { required: "Name is required" })} 
                         placeholder="Type product name here..." 
-                        className="bg-white text-black border-none h-11 focus-visible:ring-[#759C5D]" 
+                        className="bg-gray-700/10 text-black border-none h-11 focus-visible:ring-[#759C5D]" 
                     />
                     {errors.name && <span className="text-red-400 text-xs">Product Name is required</span>}
                 </div>
                 <div className="space-y-2">
-                    <Label className="text-gray-300 font-medium">Description</Label>
+                    <Label className="text-gray-600 font-medium">Description</Label>
                     <Textarea 
                         {...register("description", { required: true })} 
-                        className="bg-white text-black border-none min-h-[150px] focus-visible:ring-[#759C5D]" 
+                        className="bg-gray-700/10 text-black border-none min-h-[150px] focus-visible:ring-[#759C5D]" 
                         placeholder="Type description here..." 
                     />
                 </div>
@@ -180,18 +180,18 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
         {/* Variants Section - Dark Theme */}
         <div className="space-y-4">
             <div className="flex justify-between items-center px-1">
-                <h2 className="text-xl font-bold text-gray-800">Product Variants & Images</h2>
+                <h2 className="text-xl font-bold text-gray-700">Product Variants & Images</h2>
                 <Button 
                     type="button" 
                     onClick={() => append({ title: '', price: 0, buyingPrice: 0, stock: 0, stockAlertLimit: 5, color: '#000000' })} 
-                    className="bg-[#759C5D] hover:bg-[#5e8048] text-white shadow-md transition-all active:scale-95"
+                    className="bg-[#759C5D] hover:bg-[#5e8048] text-gray-700 shadow-md transition-all active:scale-95"
                 >
                     <Plus size={18} className="mr-2" /> Add Variant
                 </Button>
             </div>
 
             {fields.map((field, index) => (
-                <Card key={field.id} className="relative bg-[#0F172A] border-none shadow-lg rounded-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4">
+                <Card key={field.id} className="relative bg-white border-none shadow-lg rounded-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4">
                     <Button 
                         type="button" 
                         variant="ghost" 
@@ -202,9 +202,9 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                         <Trash2 size={20} />
                     </Button>
                     
-                    <CardHeader className="border-b border-gray-800 pb-3">
-                        <CardTitle className="text-base text-gray-200 font-medium flex items-center gap-2">
-                            <span className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-xs text-white">{index + 1}</span>
+                    <CardHeader className="border-b border-gray-700 pb-3">
+                        <CardTitle className="text-base text-gray-600 font-medium flex items-center gap-2">
+                            <span className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-xs text-gray-700">{index + 1}</span>
                             Variant Details
                         </CardTitle>
                     </CardHeader>
@@ -214,11 +214,11 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                             <div>
                                 <Label className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1.5 block">Variant Title (Size)</Label>
-                                <Input {...register(`variants.${index}.title` as const, { required: true })} placeholder="e.g. Small" className="bg-gray-800 text-white border-gray-700 h-10 focus-visible:ring-[#759C5D]" />
+                                <Input {...register(`variants.${index}.title` as const, { required: true })} placeholder="e.g. Small" className="bg-gray-700/10 text-gray-700 border-gray-100 h-10 focus-visible:ring-[#759C5D]" />
                             </div>
                             <div>
                                 <Label className="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1.5 block">Stock Alert Limit</Label>
-                                <Input type="number" {...register(`variants.${index}.stockAlertLimit` as const)} placeholder="5" className="bg-gray-800 text-white border-gray-700 h-10 focus-visible:ring-[#759C5D]" />
+                                <Input type="number" {...register(`variants.${index}.stockAlertLimit` as const)} placeholder="5" className="bg-gray-700/10 text-gray-700 border-gray-100 h-10 focus-visible:ring-[#759C5D]" />
                             </div>
                             
                             {/* Color Picker Implementation */}
@@ -229,7 +229,7 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                                     <Input 
                                         {...register(`variants.${index}.color` as const)} 
                                         placeholder="#RRGGBB" 
-                                        className="bg-gray-800 text-white border-gray-700 h-10 focus-visible:ring-[#759C5D] w-full" 
+                                        className="bg-gray-700/10 text-gray-700 border-gray-100 h-10 focus-visible:ring-[#759C5D] w-full" 
                                     />
                                     {/* Visual Color Picker (Native) */}
                                     <div className="relative w-10 h-10 rounded border border-gray-600 overflow-hidden shrink-0 shadow-sm">
@@ -244,9 +244,9 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                         </div>
 
                         {/* Pricing & Stock Row */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-5 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-5 bg-gray-700/10 p-4 rounded-lg border border-gray-800">
                             <div>
-                                <Label className="text-gray-400 text-xs font-bold mb-1.5 block">Buying Price</Label>
+                                <Label className="text-gray-600 text-xs font-bold mb-1.5 block">Buying Price</Label>
                                 <Input type="number" {...register(`variants.${index}.buyingPrice` as const)} className="bg-white text-black border-none h-9" />
                             </div>
                             <div>
@@ -267,7 +267,7 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                                     <div key={i} className="w-24 h-24 border border-gray-600 rounded-lg overflow-hidden relative group">
                                         <img src={`http://localhost:5005${img}`} alt="v" className="w-full h-full object-cover" />
                                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            <Trash2 className="text-white w-5 h-5 cursor-pointer" />
+                                            <Trash2 className="text-gray-700 w-5 h-5 cursor-pointer" />
                                         </div>
                                     </div>
                                 ))}
@@ -294,14 +294,14 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
       <div className="space-y-6">
         
         {/* Categorization Card - Dark */}
-        <Card className="bg-[#0F172A] border-none shadow-lg rounded-xl">
+        <Card className="bg-white border-none shadow-lg rounded-xl">
             <CardHeader className="border-b border-gray-800 pb-3 flex flex-row justify-between items-center">
-                <CardTitle className="text-white text-base">Categorization</CardTitle>
+                <CardTitle className="text-gray-700 text-base">Categorization</CardTitle>
                 <Button 
                     type="button" 
                     variant="ghost" 
                     size="sm" 
-                    className="text-[#759C5D] hover:text-white hover:bg-[#759C5D] h-6 text-xs px-2"
+                    className="text-[#759C5D] hover:text-gray-700 hover:bg-[#759C5D] h-6 text-xs px-2"
                     onClick={() => setIsCreatingCategory(!isCreatingCategory)}
                 >
                     {isCreatingCategory ? "Cancel" : "+ New"}
@@ -309,16 +309,16 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
             </CardHeader>
             <CardContent className="space-y-5 pt-5">
                 <div className="space-y-2">
-                    <Label className="text-gray-300 text-sm">Category</Label>
+                    <Label className="text-gray-600 text-sm">Category</Label>
                     {isCreatingCategory ? (
                         <div className="flex gap-2">
                             <Input 
                                 value={newCategoryName} 
                                 onChange={(e) => setNewCategoryName(e.target.value)} 
                                 placeholder="New Category Name" 
-                                className="bg-white text-black h-10 border-none"
+                                className="bg-gray-700/10 text-black h-10 border-none"
                             />
-                            <Button type="button" onClick={handleCreateCategory} className="bg-[#759C5D] text-white hover:bg-[#5e8048]">Save</Button>
+                            <Button type="button" onClick={handleCreateCategory} className="bg-[#759C5D] text-gray-700 hover:bg-[#5e8048]">Save</Button>
                         </div>
                     ) : (
                         <Controller
@@ -327,7 +327,7 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                             rules={{ required: true }}
                             render={({ field }) => (
                                 <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger className="bg-white text-black border-none h-10"><SelectValue placeholder="Select..." /></SelectTrigger>
+                                    <SelectTrigger className="bg-gray-700/10 text-black border-none h-10"><SelectValue placeholder="Select..." /></SelectTrigger>
                                     <SelectContent>
                                         {categories?.map((cat: any) => (
                                             <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
@@ -339,26 +339,26 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                     )}
                 </div>
                 <div className="space-y-2">
-                    <Label className="text-gray-300 text-sm">Tags</Label>
-                    <Input placeholder="Enter tag" className="bg-white text-black border-none h-10" />
+                    <Label className="text-gray-600 text-sm">Tags</Label>
+                    <Input placeholder="Enter tag" className="bg-gray-700/10 text-black border-none h-10" />
                 </div>
             </CardContent>
         </Card>
 
         {/* Status Card - Dark */}
-        <Card className="bg-[#0F172A] border-none shadow-lg rounded-xl">
+        <Card className="bg-white border-none shadow-lg rounded-xl">
             <CardHeader className="border-b border-gray-800 pb-3">
-                <CardTitle className="text-white text-base">Status</CardTitle>
+                <CardTitle className="text-gray-700 text-base">Status</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5 pt-5">
                 <div className="space-y-2">
-                    <Label className="text-gray-300 text-sm">Product Status</Label>
+                    <Label className="text-gray-600 text-sm">Product Status</Label>
                     <Controller
                         name="status"
                         control={control}
                         render={({ field }) => (
                             <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger className="bg-white text-black border-none h-10"><SelectValue /></SelectTrigger>
+                                <SelectTrigger className="bg-gray-700/10 text-black border-none h-10"><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="published">Published</SelectItem>
                                     <SelectItem value="draft">Draft</SelectItem>
@@ -367,8 +367,8 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
                         )}
                     />
                 </div>
-                <div className="flex items-center justify-between p-3 border border-gray-700 rounded-lg bg-gray-800/50">
-                    <Label className="cursor-pointer text-gray-300 text-sm font-medium" htmlFor="featured">Featured Product</Label>
+                <div className="flex items-center justify-between p-3 border border-gray-400 rounded-lg bg-gray-700/10">
+                    <Label className="cursor-pointer text-gray-600 text-sm font-medium" htmlFor="featured">Featured Product</Label>
                     <Controller
                         name="isFeatured"
                         control={control}
@@ -389,7 +389,7 @@ export default function ProductForm({ initialData }: { initialData?: any }) {
         <Button 
             type="submit" 
             size="lg" 
-            className="w-full bg-[#759C5D] hover:bg-[#5e8048] text-white font-bold h-12 shadow-lg shadow-green-100 transition-all hover:scale-[1.02]" 
+            className="w-full bg-[#759C5D] hover:bg-[#5e8048] text-gray-700 font-bold h-12 shadow-lg shadow-green-100 transition-all hover:scale-[1.02]" 
             disabled={mutation.isPending}
         >
             {mutation.isPending ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : (initialData ? "Update Product" : "Confirm Changes")}
