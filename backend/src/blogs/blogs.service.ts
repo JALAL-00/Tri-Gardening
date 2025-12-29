@@ -58,8 +58,8 @@ export class BlogsService {
     return this.findOne(id);
   }
 
-  async remove(deleteBlogDto: DeleteBlogDto): Promise<void> {
-    const blog = await this.findOne(deleteBlogDto.id);
+  async remove(id: string): Promise<void> {
+    const blog = await this.findOne(id); 
     await this.blogRepository.remove(blog);
   }
 

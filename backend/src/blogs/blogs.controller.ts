@@ -32,8 +32,8 @@ export class BlogsController {
         return this.blogsService.update(updateBlogDto);
     }
     
-    @Delete()
-    remove(@Body() deleteBlogDto: DeleteBlogDto) {
-        return this.blogsService.remove(deleteBlogDto);
+    @Delete(':id')
+    remove(@Param('id', ParseUUIDPipe) id: string) {
+        return this.blogsService.remove(id);
     }
 }
